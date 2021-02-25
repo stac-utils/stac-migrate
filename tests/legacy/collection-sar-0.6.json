@@ -1,0 +1,49 @@
+{
+	"stac_version":"0.6.2",
+	"id":"S1A_EW_GRDM_1SSH_20181103T235855_20181103T235955_024430_02AD5D_5616",
+	"description": "Single asset collection with SAR data",
+	"license": "proprietary",
+	"extent":{
+		"spatial":[-70.275032,-64.72924,-65.087479,-51.105831],
+		"temporal":["2018-11-03T23:58:55.121559Z","2018-11-03T23:59:55.112875Z"]
+	},
+	"properties":{
+		"dtr:start_datetime":"2018-11-03T23:58:55.121559Z",
+		"dtr:end_datetime":"2018-11-03T23:59:55.112875Z",
+		"sar:platform":"Sentinel-1A",
+		"sar:constellation":"Sentinel-1",
+		"sar:instrument":"C-SAR",
+		"sar:instrument_mode":"EW",
+		"sar:polarization":["HH"],
+		"sar:resolution":[50,50],
+		"sar:pixel_spacing":[25,25],
+		"sar:looks":[3,1,2.7],
+		"sar:frequency_band":"C",
+		"sar:center_wavelength":5.546576466235,
+		"sar:center_frequency":5.405,
+		"sar:pass_direction":null,
+		"sar:relative_orbit":[33],
+		"sar:absolute_orbit":[24430],
+		"sar:type":"GRD",
+		"sar:bands":[
+			{
+				"name":"band_1",
+				"polarization":"HH"
+			}
+		]
+	},
+	"links":[
+		{
+			"rel":"self",
+			"href":"https://example.com/collections/sentinel-1/items/S1A_EW_GRDM_1SSH_20181103T235855_20181103T235955_024430_02AD5D_5616"
+		},
+		{
+			"rel":"parent",
+			"href":"https://example.com/collections/sentinel-1"
+		},
+		{
+			"rel":"root",
+			"href":"https://example.com/collections"
+		}
+	]
+}

@@ -1,0 +1,11 @@
+{
+	"stac_version":"1.0.0-beta.2",
+	"id":"example",
+	"title":"Example",
+	"description":"Example",
+	"links":[
+		{
+			"href":"https://example.com"
+		}
+	]
+}

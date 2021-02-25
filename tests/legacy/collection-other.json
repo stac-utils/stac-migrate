@@ -1,0 +1,56 @@
+{
+	"stac_version":"0.7.0",
+	"id":"example",
+	"title":"Example",
+	"description":"Example",
+	"license":"Apache-2.0",
+	"deprecated": true,
+	"extent":{
+		"spatial":[
+			180,
+			-56,
+			-180,
+			83
+		],
+		"temporal":[
+			"2015-06-23T00:00:00Z",
+			null
+		]
+	},
+	"links":[
+		{
+			"href":"https://example.com"
+		}
+	],
+	"other_properties":{
+		"eo:bands":{
+			"values":[
+				[
+					{
+						"name":"B1",
+						"common_name":"coastal",
+						"center_wavelength":4.439,
+						"gsd":60
+					},
+					{
+						"name":"B2",
+						"common_name":"blue",
+						"center_wavelength":4.966,
+						"gsd":10
+					}
+				]
+			]
+		},
+		"sar:pass_direction":{
+			"values": [
+				"ascending",
+				"descending",
+				null
+			]
+		},
+		"openeo:array":{
+			"values": [1,2,3,4,5,6]
+		},
+		"deprecated": false
+	}
+}

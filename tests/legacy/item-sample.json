@@ -1,0 +1,54 @@
+{
+  "type": "Feature",
+  "id" : "CS3-20160503_132131_05",
+  "bbox": [-122.59750209, 37.48803556, -122.2880486, 37.613537207],
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [-122.308150179, 37.488035566],
+        [-122.597502109, 37.538869539],
+        [-122.576687533, 37.613537207],
+        [-122.288048600, 37.562818007],
+        [-122.308150179, 37.488035566]
+      ]
+    ]
+  },
+  "properties": {
+    "datetime": "2016-05-03T13:22:30.040Z",
+    "eo:bands": [
+        {
+          "name": "B1"
+        },
+        {
+          "name": "B2"
+        },
+        {
+          "name": "B3"
+        }
+    ],
+    "eo:sun_azimuth": 168.7,
+    "eo:cloud_cover": 0.12,
+    "eo:off_nadir": 1.4,
+    "eo:platform": "COOLSAT2",
+    "eo:instrument": "msi",
+    "eo:sun_elevation": 33.4,
+    "eo:gsd": 0.512
+  },
+  "links": [
+    {"rel": "self", "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/CS3-20160503_132130_04.json"},
+    {"rel": "root", "href": "http://cool-sat.com/catalog/catalog.json"},
+    {"rel": "parent", "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/catalog.json"},
+    {"rel": "collection", "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/catalog.json"}
+  ],
+  "assets": {
+    "b1": {
+      "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/b1.tif",
+      "eo:bands": [0]
+    },
+    "b2+3": {
+      "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/b1.tif",
+      "eo:bands": [1,2]
+    }
+  }
+}
