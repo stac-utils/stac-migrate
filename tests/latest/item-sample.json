@@ -1,5 +1,10 @@
 {
   "stac_version": "1.0.0-beta.2",
+  "stac_extensions": [
+    "checksum",
+    "eo",
+    "view"
+  ],
   "type": "Feature",
   "id" : "CS3-20160503_132131_05",
   "bbox": [-122.59750209, 37.48803556, -122.2880486, 37.613537207],
@@ -45,12 +50,15 @@
   "assets": {
     "b1": {
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/b1.tif",
+      "type": "image/tiff; application=geotiff",
       "eo:bands": [{
         "name": "B1"
-      }]
+      }],
+      "checksum:multihash": "1114a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
     },
     "b2+3": {
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/b1.tif",
+      "type": "image/tiff; application=geotiff; profile=cloud-optimized",
       "eo:bands": [
         {
           "name": "B2"

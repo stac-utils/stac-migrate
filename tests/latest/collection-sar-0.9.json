@@ -5,12 +5,8 @@
 	"description": "Single asset collection with SAR data",
 	"license": "proprietary",
 	"extent":{
-		"spatial":{
-			"bbox":[[-70.275032,-64.72924,-65.087479,-51.105831]]
-		},
-		"temporal":{
-			"interval":[["2018-11-03T23:58:55.121559Z","2018-11-03T23:59:55.112875Z"]]
-		}
+		"spatial":[-70.275032,-64.72924,-65.087479,-51.105831],
+		"temporal":["2018-11-03T23:58:55.121559Z","2018-11-03T23:59:55.112875Z"]
 	},
 	"summaries":{
 		"start_datetime":["2018-11-03T23:58:55.121559Z"],
@@ -18,9 +14,6 @@
 		"platform":["Sentinel-1A"],
 		"constellation":["Sentinel-1"],
 		"instruments":["C-SAR"],
-		"sat:orbit_state":["geostationary"],
-		"sat:relative_orbit":[33],
-		"sat:absolute_orbit":[24430],
 		"sar:instrument_mode":["EW"],
 		"sar:polarizations":["HH"],
 		"sar:resolution_range":[50],
@@ -33,6 +26,9 @@
 		"sar:frequency_band":["C"],
 		"sar:center_wavelength":[5.546576466235],
 		"sar:center_frequency":[5.405],
+		"sat:orbit_state":["geostationary"],
+		"sat:relative_orbit":[33],
+		"sat:absolute_orbit":[24430],
 		"sar:product_type":["GRD"]
 	},
 	"links":[

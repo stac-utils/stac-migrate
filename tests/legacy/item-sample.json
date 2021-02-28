@@ -44,10 +44,13 @@
   "assets": {
     "b1": {
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/b1.tif",
-      "eo:bands": [0]
+      "type": "image/vnd.stac.geotiff",
+      "eo:bands": [0],
+      "checksum:sha1": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
     },
     "b2+3": {
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/b1.tif",
+      "type": "image/vnd.stac.geotiff; cloud-optimized=true",
       "eo:bands": [1,2]
     }
   }

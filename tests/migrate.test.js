@@ -2,14 +2,33 @@ const Migrate = require('../migrate');
 const fs = require('fs');
 const path = require('path');
 
+function loadJson(path) {
+    return JSON.parse(fs.readFileSync('./tests/' + path));
+}
+
 describe('STAC Migrations', () => {
-    const files = fs.readdirSync('./tests/legacy/');
+    const files = fs.readdirSync('tests/legacy/');
     for(let file of files) {
-        const legacy = require('./legacy/' + file);
-        const latest = require('./latest/' + file);
+        if (!file.includes('.')) {
+            continue; // Ignore directories
+        }
+        const legacy = loadJson('legacy/' + file);
+        const latest = loadJson('latest/' + file);
         test(file, () => {
-            // Test that a response following the latest spec doesn't change at all
             expect(Migrate.stac(legacy)).toEqual(latest);
         });
     }
+
+    const latestItem = loadJson('latest/commons/item-sar-commons.json');
+    test('Commons Extension from 0.6', () => {
+        const legacyItem = loadJson('legacy/commons/item-sar-commons-0.6.json');
+        const legacyCollection06 = loadJson('legacy/collection-sar-0.6.json');
+        expect(Migrate.item(legacyItem, legacyCollection06)).toEqual(latestItem);
+    });
+
+    test('Commons Extension from 0.9', () => {
+        const legacyItem = loadJson('legacy/commons/item-sar-commons-0.9.json');
+        const legacyCollection09 = loadJson('legacy/collection-sar-0.9.json');
+        expect(Migrate.item(legacyItem, legacyCollection09)).toEqual(latestItem);
+    });
 });

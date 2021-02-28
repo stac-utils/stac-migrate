@@ -1,5 +1,9 @@
 {
 	"stac_version":"1.0.0-beta.2",
+	"stac_extensions": [
+		"datacube",
+		"scientific"
+	],
 	"id":"Sentinel-2",
 	"title":"Sentinel-2 MSI L2A",
 	"description":"Sentinel-2A is a wide-swath, high-resolution, multi-spectral imaging mission supporting Copernicus Land Monitoring studies.",
