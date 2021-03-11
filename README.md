@@ -27,11 +27,11 @@ Import the library: `const Migrate = require('@radiantearth/stac-migrate');`
 * Data Cube
 * Datetime Range
 * Electro-Optical
-* (File)
+* File
 * (Item) Asset Definition
 * Label
 * Point Cloud
-* (Procesing)
+* Procesing
 * Projection
 * SAR
 * Satellite
