@@ -1,0 +1,33 @@
+{
+	"stac_version":"1.0.0-rc.1",
+	"stac_extensions": [
+		"file"
+	],
+	"type":"Collection",
+	"id":"example",
+	"description":"Example",
+	"license":"Apache-2.0",
+	"assets": {
+		"preview": {
+			"href": "http://example.com/collection/preview.png",
+			"type": "image/png",
+			"file:checksum": "12209f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+		}
+	},
+	"extent":{
+		"spatial":{
+			"bbox":[[180,-56,-180,83]]
+		},
+		"temporal":{
+			"interval":[["2015-06-23T00:00:00Z",null]]
+		}
+	},
+	"sci:citation": "Cite me please!",
+	"links":[],
+	"summaries": {
+		"eo:cloud_cover": {
+			"minimum": 0,
+			"maximum": 10
+		}
+	}
+}

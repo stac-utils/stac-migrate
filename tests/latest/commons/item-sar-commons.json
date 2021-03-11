@@ -1,8 +1,9 @@
 {
-	"stac_version": "1.0.0-beta.2",
+	"stac_version": "1.0.0-rc.1",
 	"stac_extensions": [
 		"sar",
-		"sat"
+		"sat",
+		"view"
 	],
 	"id": "S1A_EW_GRDM_1SSH_20181103T235855_20181103T235955_024430_02AD5D_5616",
 	"type": "Feature",
@@ -33,7 +34,9 @@
 		"sat:orbit_state":"geostationary",
 		"sat:relative_orbit":33,
 		"sat:absolute_orbit":24430,
-		"sar:product_type":"GRD"
+		"sar:product_type":"GRD",
+		"view:incidence_angle":12.3,
+		"view:off_nadir":32.1
 	},
 	"assets": {},
 	"links": []

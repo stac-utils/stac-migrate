@@ -24,7 +24,9 @@
 		"sar:pass_direction":null,
 		"sar:relative_orbit":[33],
 		"sar:absolute_orbit":[24430],
-		"sar:type":"GRD"
+		"sar:type":"GRD",
+		"sar:incidence_angle":12.3,
+		"sar:off_nadir":32.1
 	},
 	"links":[
 		{

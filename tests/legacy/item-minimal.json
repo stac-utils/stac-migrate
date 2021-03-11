@@ -1,0 +1,18 @@
+{
+  "stac_version": "0.6.0",
+  "type": "Feature",
+  "geometry": null,
+  "properties": {
+    "datetime": "2016-05-03T13:22:30.040Z",
+    "eo:azimuth": 22.4,
+    "eo:incidence_angle": 122.3,
+    "item:license": "Apache-2.0"
+  },
+  "assets": {
+    "b1": {
+      "eo:bands": [0],
+      "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/b1.tif",
+      "checksum:sha2": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+    }
+  }
+}

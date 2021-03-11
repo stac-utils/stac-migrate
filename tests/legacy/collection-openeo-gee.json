@@ -196,7 +196,7 @@
 		"eo:cloud_cover":{
 			"extent":[
 				0,
-				100
+				50
 			]
 		}
 	}

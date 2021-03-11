@@ -1,8 +1,8 @@
 {
-  "stac_version": "1.0.0-beta.2",
+  "stac_version": "1.0.0-rc.1",
   "stac_extensions": [
-    "checksum",
     "eo",
+    "file",
     "view"
   ],
   "type": "Feature",
@@ -54,7 +54,7 @@
       "eo:bands": [{
         "name": "B1"
       }],
-      "checksum:multihash": "1114a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
+      "file:checksum": "1114a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
     },
     "b2+3": {
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/b1.tif",

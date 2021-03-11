@@ -4,15 +4,14 @@
 
 var compareVersions = require('compare-versions');
 
-const LATEST_VERSION = '1.0.0-beta.2';
+const LATEST_VERSION = '1.0.0-rc.1';
 const DONE = true; // This is used to verify in code coverage whether something has been used or not
 const EXTENSIONS = {
 	// Add a : at the end to indicate it has a prefix, otherwise list all fields separately (see version extension for example).
 	itemAndCollection: {
-		'checksum:': 'checksum', // rc1: to be removed
 		'cube:': 'datacube',
-//		'file:': 'file', // rc1: to be added
-//		'processing:': 'processing', // rc1: to be added
+		'file:': 'file',
+		'processing:': 'processing',
 		'sci:': 'scientific',
 		'version': 'version',
 		'deprecated': 'version',
@@ -21,7 +20,6 @@ const EXTENSIONS = {
 		// None yet
 	},
 	collection: {
-		'assets': 'collection-assets', // rc1: to be removed
 		'item_assets': 'item-assets'
 	},
 	item: {
@@ -153,6 +151,7 @@ var _ = {
 		if (_.type(defaultValue) !== _.type(obj[key])) {
 			obj[key] = defaultValue;
 		}
+		return true;
 	},
 
 	addExtension(context, newExtension) {
@@ -232,7 +231,9 @@ var _ = {
 		if (condition(obj[key])) {
 			context[key] = fromSummary && !mergedSummary ? obj[key][0] : obj[key];
 			delete obj[key];
+			return true;
 		}
+		return false;
 	},
 
 	runAll(migrations, obj, context = null) {
@@ -280,6 +281,11 @@ var Catalog = {
 	migrate(catalog) {
 		V.set(catalog.stac_version);
 		catalog.stac_version = LATEST_VERSION;
+		catalog.type = 'Catalog';
+
+		_.ensure(catalog, 'id', '') && DONE;
+		_.ensure(catalog, 'description', '') && DONE;
+		_.ensure(catalog, 'links', []) && DONE;
 
 		_.runAll(Catalog, catalog, catalog);
 
@@ -293,6 +299,17 @@ var Collection = {
 
 	migrate(collection) {
 		Catalog.migrate(collection); // Migrates stac_version, stac_extensions, id, title, description, links
+		collection.type = 'Collection';
+
+		_.ensure(collection, 'license', 'proprietary') && DONE;
+		_.ensure(collection, 'extent', {
+			spatial: {
+				interval: []
+			},
+			temporal: {
+				bbox: []
+			}
+		}) && DONE;
 
 		_.runAll(Collection, collection, collection);
 
@@ -308,8 +325,6 @@ var Collection = {
 
 	extent(collection) {
 		if (V.before('0.8.0')) {
-			// Add missing extent upfront. Makes the following code simpler as it works on the object.
-			_.ensure(collection, 'extent', {});
 			// Restructure spatial extent
 			if (Array.isArray(collection.extent.spatial)) {
 				collection.extent.spatial = {
@@ -330,11 +345,15 @@ var Collection = {
 	},
 
 	collectionAssets(collection) {
-		// Nothing to do
+		V.before('1.0.0-rc.1') && _.removeExtension(collection, 'collection-assets') && DONE;
+
+		Asset.migrateAll(collection);
 	},
 
 	itemAsset(collection) {
 		V.before('1.0.0-beta.2') && _.rename(collection, 'item_assets', 'assets');
+
+		Asset.migrateAll(collection, 'item_assets');
 	},
 
 	summaries(collection) {
@@ -347,10 +366,8 @@ var Collection = {
 				let prop = collection.other_properties[key];
 				if (Array.isArray(prop.extent) && prop.extent.length === 2) {
 					collection.summaries[key] = {
-						min: prop.extent[0],
-//						minimum: prop.extent[0],
-						max: prop.extent[1],
-//						maximum: prop.extent[0],
+						minimum: prop.extent[0],
+						maximum: prop.extent[1],
 					};
 				}
 				else if (Array.isArray(prop.values)) {
@@ -367,8 +384,9 @@ var Collection = {
 		}
 
 		// Migrate Commons extension - part 2
-		// Move properties to (single element) summaries
-		if (V.before('1.0.0-beta.1') && _.isObject(collection.properties)) {
+		// Move properties to (single element) summaries if the Collection is standalone
+		// see also https://github.com/stac-utils/stac-migrate/issues/3
+		if (V.before('1.0.0-beta.1') && _.isObject(collection.properties) && !collection.links.find(link => ['child', 'item'].includes(link.rel))) {
 			for(let key in collection.properties) {
 				let value = collection.properties[key];
 				if (!Array.isArray(value)) {
@@ -378,13 +396,13 @@ var Collection = {
 			}
 		}
 
-/*		if (V.before('1.0.0-rc.1')) {
+		if (V.before('1.0.0-rc.1')) {
 			_.mapObject(collection.summaries, val => {
 				_.rename(val, 'min', 'minimum') && DONE;
 				_.rename(val, 'max', 'maximum') && DONE;
 				return val;
 			});
-		} */
+		}
 
 		// now we can work on all summaries and migrate them
 		Fields.migrate(collection.summaries);
@@ -409,6 +427,18 @@ var Item = {
 		V.set(item.stac_version);
 		item.stac_version = LATEST_VERSION;
 
+		_.ensure(item, 'id', '') && DONE;
+		_.ensure(item, 'type', 'Feature') && DONE;
+		if (!_.isObject(item.geometry)) {
+			item.geometry = null;
+		}
+		if (item.geometry !== null) {
+			_.ensure(item, 'bbox', []) && DONE;
+		}
+		_.ensure(item, 'properties', {}) && DONE;
+		_.ensure(item, 'links', []) && DONE;
+		_.ensure(item, 'assets', {}) && DONE;
+
 		// Migrate Commons extension - part 1
 		let commons = false;
 		if (_.isObject(collection) && _.isObject(collection.properties)) {
@@ -432,9 +462,9 @@ var Item = {
 
 var Asset = {
 
-	migrateAll(context) {
-		for(let key in context.assets) {
-			Asset.migrate(context.assets[key], context);
+	migrateAll(context, field = 'assets') {
+		for(let key in context[field]) {
+			Asset.migrate(context[field][key], context);
 		}
 	},
 
@@ -452,19 +482,18 @@ var Asset = {
 	},
 
 	eo(asset, context) {
-		if (!Array.isArray(context.properties['eo:bands']) || !Array.isArray(asset['eo:bands'])) {
-			return;
-		}
-
-		for(let i in asset['eo:bands']) {
-			let band = asset['eo:bands'][i];
-			if (_.is(band, 'number') && _.isObject(context.properties['eo:bands'][band])) {
-				band = context.properties['eo:bands'][band];
+		let bands = _.isObject(context.properties) && Array.isArray(context.properties['eo:bands']) ? context.properties['eo:bands'] : [];
+		if (Array.isArray(asset['eo:bands'])) {
+			for(let i in asset['eo:bands']) {
+				let band = asset['eo:bands'][i];
+				if (_.is(band, 'number') && _.isObject(bands[band])) {
+					band = bands[band];
+				}
+				else if (!_.isObject(band)) {
+					band = {}; // "Fix" invalid band index
+				}
+				asset['eo:bands'][i] = band;
 			}
-			else if (!_.isObject(band)) {
-				band = {}; // "Fix" invalid band index
-			}
-			asset['eo:bands'][i] = band;
 		}
 	}
 
@@ -489,15 +518,17 @@ var Fields = {
 		// Nothing to do
 	},
 
-	checksum(obj) {
+	checksum(obj, context) {
 		if (V.before('0.9.0')) {
 			_.rename(obj, 'checksum:md5', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'md5') && DONE;
 			_.rename(obj, 'checksum:sha1', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'sha1') && DONE;
-			_.rename(obj, 'checksum:sha2', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'sha2') && DONE;
-			_.rename(obj, 'checksum:sha3', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'sha3') && DONE;
+			// We assume sha2/3-256 although that may fail in some cases and other lengths are chosen
+			// Never seen this implemtned in the wild, so let's try this until another use case comes up
+			_.rename(obj, 'checksum:sha2', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'sha2-256') && DONE;
+			_.rename(obj, 'checksum:sha3', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'sha3-256') && DONE;
 		}
 
-//		V.before('1.0.0-rc.1') && _.rename(obj, 'checksum:multihash', 'file:checksum') && DONE;
+		V.before('1.0.0-rc.1') && _.rename(obj, 'checksum:multihash', 'file:checksum') && _.addExtension(context, 'file') && DONE;
 	},
 
 	cube() {
@@ -529,7 +560,7 @@ var Fields = {
 	},
 
 	label(obj) {
-        // Migrate 0.8.0-rc1 non-pluralized forms
+		// Migrate 0.8.0-rc1 non-pluralized forms
 		if (V.before('0.8.0')) {
 			_.rename(obj, 'label:property', 'label:properties') && DONE;
 			_.rename(obj, 'label:task', 'label:tasks') && DONE;
@@ -574,7 +605,7 @@ var Fields = {
 	},
 
 	sat(obj) {
-        // Migrate 0.9.0-rc _angle suffixes
+		// Migrate 0.9.0-rc _angle suffixes
 		if (V.before('0.9.0')) {
 			_.rename(obj, 'sat:off_nadir_angle', 'sat:off_nadir') && DONE;
 			_.rename(obj, 'sat:azimuth_angle', 'sat:azimuth') && DONE;
