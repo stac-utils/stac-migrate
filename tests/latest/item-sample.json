@@ -2,7 +2,7 @@
   "stac_version": "1.0.0-rc.1",
   "stac_extensions": [
     "eo",
-    "file",
+		"https://stac-extensions.github.io/file/v1.0.0/schema.json",
     "view"
   ],
   "type": "Feature",

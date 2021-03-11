@@ -1,13 +1,14 @@
 {
 	"stac_version":"1.0.0-rc.1",
 	"stac_extensions": [
-		"version"
+		"https://stac-extensions.github.io/version/v1.0.0/schema.json"
 	],
 	"type":"Collection",
 	"id":"example",
 	"title":"Example",
 	"description":"Example",
 	"license":"Apache-2.0",
+	"version": 1,
 	"deprecated": true,
 	"extent":{
 		"spatial":{

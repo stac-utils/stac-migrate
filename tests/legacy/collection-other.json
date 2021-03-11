@@ -4,6 +4,7 @@
 	"title":"Example",
 	"description":"Example",
 	"license":"Apache-2.0",
+	"version": 1,
 	"deprecated": true,
 	"extent":{
 		"spatial":[

@@ -1,7 +1,7 @@
 {
 	"stac_version":"1.0.0-rc.1",
 	"stac_extensions": [
-		"datacube",
+		"https://stac-extensions.github.io/datacube/v1.0.0/schema.json",
 		"scientific"
 	],
 	"type":"Collection",

@@ -6,33 +6,48 @@ var compareVersions = require('compare-versions');
 
 const LATEST_VERSION = '1.0.0-rc.1';
 const DONE = true; // This is used to verify in code coverage whether something has been used or not
+const SCHEMAS = {
+	'datacube': 'https://stac-extensions.github.io/datacube/v1.0.0/schema.json',
+	'file': 'https://stac-extensions.github.io/file/v1.0.0/schema.json',
+	'item-assets': 'https://stac-extensions.github.io/item-assets/v1.0.0/schema.json',
+	'label': 'https://stac-extensions.github.io/label/v1.0.0/schema.json',
+	'pointcloud': 'https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json',
+	'processing': 'https://stac-extensions.github.io/processing/v1.0.0/schema.json',
+	'sar': 'https://stac-extensions.github.io/sar/v1.0.0/schema.json',
+	'sat': 'https://stac-extensions.github.io/sat/v1.0.0/schema.json',
+	'timestamps': 'https://stac-extensions.github.io/timestamps/v1.0.0/schema.json',
+	'version': 'https://stac-extensions.github.io/version/v1.0.0/schema.json'
+};
 const EXTENSIONS = {
 	// Add a : at the end to indicate it has a prefix, otherwise list all fields separately (see version extension for example).
 	itemAndCollection: {
-		'cube:': 'datacube',
-		'file:': 'file',
-		'processing:': 'processing',
+		// with prefix
+		'cube:': SCHEMAS.datacube,
+		'eo:': 'eo',
+		'file:': SCHEMAS.file,
+		'label:': SCHEMAS.label,
+		'pc:': SCHEMAS.pointcloud,
+		'processing:': SCHEMAS.processing,
+		'proj:': 'projection',
+		'sar:': SCHEMAS.sar,
+		'sat:': SCHEMAS.sat,
 		'sci:': 'scientific',
-		'version': 'version',
-		'deprecated': 'version',
+		'view:': 'view',
+		// without prefix
+		'version': SCHEMAS.version,
+		'deprecated': SCHEMAS.version,
+		'published': SCHEMAS.timestamps,
+		'expires': SCHEMAS.timestamps,
+		'unpublished': SCHEMAS.timestamps
 	},
 	catalog: {
 		// None yet
 	},
 	collection: {
-		'item_assets': 'item-assets'
+		'item_assets': SCHEMAS['item-assets']
 	},
 	item: {
-		'eo:': 'eo',
-		'label:': 'label',
-		'pc:': 'pointcloud',
-		'proj:': 'projection',
-		'sar:': 'sar',
-		'sat:': 'sat',
-		'view:': 'view',
-		'published': 'timestamps',
-		'expires': 'timestamps',
-		'unpublished': 'timestamps'
+		// None yet
 	},
 };
 EXTENSIONS.collection = Object.assign(EXTENSIONS.collection, EXTENSIONS.itemAndCollection);
@@ -170,6 +185,12 @@ var _ = {
 		return _.removeFromArray(context, 'stac_extensions', oldExtension) && DONE;
 	},
 
+	migrateExtensionShortnames(context) {
+		let oldShortnames = Object.keys(SCHEMAS);
+		let newSchemas = Object.values(SCHEMAS);
+		return _.mapValues(context, 'stac_extensions', oldShortnames, newSchemas);
+	},
+
 	populateExtensions(context, type) {
 		let objectsToCheck = [];
 		if (type == 'catalog' || type == 'collection') {
@@ -291,6 +312,7 @@ var Catalog = {
 
 		_.ensure(catalog, 'stac_extensions', []) && DONE;
 		V.before('0.8.0') && _.populateExtensions(catalog, 'catalog') && DONE;
+		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(catalog) && DONE;
 	}
 
 };
@@ -321,6 +343,7 @@ var Collection = {
 
 		V.before('0.8.0') && _.populateExtensions(collection, 'collection') && DONE;
 		V.before('1.0.0-beta.1') && _.mapValues(collection, 'stac_extensions', ['assets'], ['item-assets']) && DONE;
+		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(collection) && DONE;
 	},
 
 	extent(collection) {
@@ -408,10 +431,10 @@ var Collection = {
 		Fields.migrate(collection.summaries);
 
 		// Some fields should usually be on root-level if there's only one element
-		_.moveTo(collection.summaries, 'sci:doi', collection, true) && DONE;
-		_.moveTo(collection.summaries, 'sci:publications', collection, true, true) && DONE;
-		_.moveTo(collection.summaries, 'sci:citation', collection, true) && DONE;
-		_.moveTo(collection.summaries, 'cube:dimensions', collection, true) && DONE;
+		_.moveTo(collection.summaries, 'sci:doi', collection, true) && _.addExtension(collection, 'scientific') && DONE;
+		_.moveTo(collection.summaries, 'sci:publications', collection, true, true) && _.addExtension(collection, 'scientific') && DONE;
+		_.moveTo(collection.summaries, 'sci:citation', collection, true) && _.addExtension(collection, 'scientific') && DONE;
+		_.moveTo(collection.summaries, 'cube:dimensions', collection, true) && _.addExtension(collection, SCHEMAS.datacube) && DONE;
 
 		// Remove summary field if empty
 		if (Object.keys(collection.summaries).length === 0) {
@@ -456,6 +479,7 @@ var Item = {
 		_.ensure(item, 'stac_extensions', []) && DONE;
 		// Also populate extensions if commons has been implemented
 		(V.before('0.8.0') || commons) && _.populateExtensions(item, 'item') && DONE;
+		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(item) && DONE;
 	}
 
 };
@@ -528,7 +552,7 @@ var Fields = {
 			_.rename(obj, 'checksum:sha3', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'sha3-256') && DONE;
 		}
 
-		V.before('1.0.0-rc.1') && _.rename(obj, 'checksum:multihash', 'file:checksum') && _.addExtension(context, 'file') && DONE;
+		V.before('1.0.0-rc.1') && _.rename(obj, 'checksum:multihash', 'file:checksum') && _.addExtension(context, SCHEMAS.file) && DONE;
 	},
 
 	cube() {
@@ -584,7 +608,7 @@ var Fields = {
 
 		// Which version have they been (re)moved?
 		_.rename(obj, 'sar:incidence_angle', 'view:incidence_angle') && _.addExtension(context, 'view') && DONE;
-		_.rename(obj, 'sar:pass_direction', 'sat:orbit_state') && _.mapValues(obj, 'sat:orbit_state', [null], ['geostationary']) && _.addExtension(context, 'sat') && DONE;
+		_.rename(obj, 'sar:pass_direction', 'sat:orbit_state') && _.mapValues(obj, 'sat:orbit_state', [null], ['geostationary']) && _.addExtension(context, SCHEMAS.sat) && DONE;
 
 		if (V.before('0.7.0')) {
 			_.flattenArray(obj, 'sar:resolution', ['sar:resolution_range', 'sar:resolution_azimuth'], summary) && DONE;
@@ -599,8 +623,8 @@ var Fields = {
 			_.rename(obj, 'sar:constellation', 'constellation') && DONE;
 			_.rename(obj, 'sar:type', 'sar:product_type') && DONE;
 			_.rename(obj, 'sar:polarization', 'sar:polarizations') && DONE;
-			_.flattenOneElementArray(obj, 'sar:absolute_orbit', summary) && _.rename(obj, 'sar:absolute_orbit', 'sat:absolute_orbit') && _.addExtension(context, 'sat') && DONE;
-			_.flattenOneElementArray(obj, 'sar:relative_orbit', summary) && _.rename(obj, 'sar:relative_orbit', 'sat:relative_orbit') && _.addExtension(context, 'sat') && DONE;
+			_.flattenOneElementArray(obj, 'sar:absolute_orbit', summary) && _.rename(obj, 'sar:absolute_orbit', 'sat:absolute_orbit') && _.addExtension(context, SCHEMAS.sat) && DONE;
+			_.flattenOneElementArray(obj, 'sar:relative_orbit', summary) && _.rename(obj, 'sar:relative_orbit', 'sat:relative_orbit') && _.addExtension(context, SCHEMAS.sat) && DONE;
 		}
 	},
 
