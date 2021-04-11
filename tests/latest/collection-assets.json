@@ -1,8 +1,8 @@
 {
-	"stac_version":"1.0.0-rc.1",
+	"stac_version":"1.0.0-rc.2",
 	"stac_extensions": [
 		"https://stac-extensions.github.io/file/v1.0.0/schema.json",
-		"scientific"
+		"https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
 	],
 	"type":"Collection",
 	"id":"example",

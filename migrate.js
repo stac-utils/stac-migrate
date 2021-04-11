@@ -4,35 +4,39 @@
 
 var compareVersions = require('compare-versions');
 
-const LATEST_VERSION = '1.0.0-rc.1';
+const LATEST_VERSION = '1.0.0-rc.2';
 const DONE = true; // This is used to verify in code coverage whether something has been used or not
 const SCHEMAS = {
 	'datacube': 'https://stac-extensions.github.io/datacube/v1.0.0/schema.json',
+	'eo': 'https://stac-extensions.github.io/eo/v1.0.0/schema.json',
 	'file': 'https://stac-extensions.github.io/file/v1.0.0/schema.json',
 	'item-assets': 'https://stac-extensions.github.io/item-assets/v1.0.0/schema.json',
 	'label': 'https://stac-extensions.github.io/label/v1.0.0/schema.json',
 	'pointcloud': 'https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json',
 	'processing': 'https://stac-extensions.github.io/processing/v1.0.0/schema.json',
+	'projection': 'https://stac-extensions.github.io/projection/v1.0.0/schema.json',
 	'sar': 'https://stac-extensions.github.io/sar/v1.0.0/schema.json',
 	'sat': 'https://stac-extensions.github.io/sat/v1.0.0/schema.json',
+	'scientific': 'https://stac-extensions.github.io/scientific/v1.0.0/schema.json',
 	'timestamps': 'https://stac-extensions.github.io/timestamps/v1.0.0/schema.json',
-	'version': 'https://stac-extensions.github.io/version/v1.0.0/schema.json'
+	'version': 'https://stac-extensions.github.io/version/v1.0.0/schema.json',
+	'view': 'https://stac-extensions.github.io/view/v1.0.0/schema.json'
 };
 const EXTENSIONS = {
 	// Add a : at the end to indicate it has a prefix, otherwise list all fields separately (see version extension for example).
 	itemAndCollection: {
 		// with prefix
 		'cube:': SCHEMAS.datacube,
-		'eo:': 'eo',
+		'eo:': SCHEMAS.eo,
 		'file:': SCHEMAS.file,
 		'label:': SCHEMAS.label,
 		'pc:': SCHEMAS.pointcloud,
 		'processing:': SCHEMAS.processing,
-		'proj:': 'projection',
+		'proj:': SCHEMAS.projection,
 		'sar:': SCHEMAS.sar,
 		'sat:': SCHEMAS.sat,
-		'sci:': 'scientific',
-		'view:': 'view',
+		'sci:': SCHEMAS.scientific,
+		'view:': SCHEMAS.view,
 		// without prefix
 		'version': SCHEMAS.version,
 		'deprecated': SCHEMAS.version,
@@ -303,6 +307,7 @@ var Catalog = {
 		V.set(catalog.stac_version);
 		catalog.stac_version = LATEST_VERSION;
 		catalog.type = 'Catalog';
+		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(catalog) && DONE;
 
 		_.ensure(catalog, 'id', '') && DONE;
 		_.ensure(catalog, 'description', '') && DONE;
@@ -312,7 +317,6 @@ var Catalog = {
 
 		_.ensure(catalog, 'stac_extensions', []) && DONE;
 		V.before('0.8.0') && _.populateExtensions(catalog, 'catalog') && DONE;
-		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(catalog) && DONE;
 	}
 
 };
@@ -322,6 +326,7 @@ var Collection = {
 	migrate(collection) {
 		Catalog.migrate(collection); // Migrates stac_version, stac_extensions, id, title, description, links
 		collection.type = 'Collection';
+		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(collection) && DONE;
 
 		_.ensure(collection, 'license', 'proprietary') && DONE;
 		_.ensure(collection, 'extent', {
@@ -343,7 +348,6 @@ var Collection = {
 
 		V.before('0.8.0') && _.populateExtensions(collection, 'collection') && DONE;
 		V.before('1.0.0-beta.1') && _.mapValues(collection, 'stac_extensions', ['assets'], ['item-assets']) && DONE;
-		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(collection) && DONE;
 	},
 
 	extent(collection) {
@@ -431,9 +435,9 @@ var Collection = {
 		Fields.migrate(collection.summaries);
 
 		// Some fields should usually be on root-level if there's only one element
-		_.moveTo(collection.summaries, 'sci:doi', collection, true) && _.addExtension(collection, 'scientific') && DONE;
-		_.moveTo(collection.summaries, 'sci:publications', collection, true, true) && _.addExtension(collection, 'scientific') && DONE;
-		_.moveTo(collection.summaries, 'sci:citation', collection, true) && _.addExtension(collection, 'scientific') && DONE;
+		_.moveTo(collection.summaries, 'sci:doi', collection, true) && _.addExtension(collection, SCHEMAS.scientific) && DONE;
+		_.moveTo(collection.summaries, 'sci:publications', collection, true, true) && _.addExtension(collection, SCHEMAS.scientific) && DONE;
+		_.moveTo(collection.summaries, 'sci:citation', collection, true) && _.addExtension(collection, SCHEMAS.scientific) && DONE;
 		_.moveTo(collection.summaries, 'cube:dimensions', collection, true) && _.addExtension(collection, SCHEMAS.datacube) && DONE;
 
 		// Remove summary field if empty
@@ -449,6 +453,7 @@ var Item = {
 	migrate(item, collection = null) {
 		V.set(item.stac_version);
 		item.stac_version = LATEST_VERSION;
+		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(item) && DONE;
 
 		_.ensure(item, 'id', '') && DONE;
 		_.ensure(item, 'type', 'Feature') && DONE;
@@ -479,7 +484,6 @@ var Item = {
 		_.ensure(item, 'stac_extensions', []) && DONE;
 		// Also populate extensions if commons has been implemented
 		(V.before('0.8.0') || commons) && _.populateExtensions(item, 'item') && DONE;
-		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(item) && DONE;
 	}
 
 };
@@ -569,15 +573,15 @@ var Fields = {
 
 	eo(obj, context) {
 		if (V.before('0.9.0')) {
-			_.rename(obj, 'eo:epsg', 'proj:epsg') && _.addExtension(context, 'projection') && DONE;
+			_.rename(obj, 'eo:epsg', 'proj:epsg') && _.addExtension(context, SCHEMAS.projection) && DONE;
 			_.rename(obj, 'eo:platform', 'platform') && DONE;
 			_.rename(obj, 'eo:instrument', 'instruments') && _.toArray(obj, 'instruments') && DONE;
 			_.rename(obj, 'eo:constellation', 'constellation') && DONE;
-			_.rename(obj, 'eo:off_nadir', 'view:off_nadir') && _.addExtension(context, 'view') && DONE;
-			_.rename(obj, 'eo:azimuth', 'view:azimuth') && _.addExtension(context, 'view') && DONE;
-			_.rename(obj, 'eo:incidence_angle', 'view:incidence_angle') && _.addExtension(context, 'view') && DONE;
-			_.rename(obj, 'eo:sun_azimuth', 'view:sun_azimuth') && _.addExtension(context, 'view') && DONE;
-			_.rename(obj, 'eo:sun_elevation', 'view:sun_elevation') && _.addExtension(context, 'view') && DONE;
+			_.rename(obj, 'eo:off_nadir', 'view:off_nadir') && _.addExtension(context, SCHEMAS.view) && DONE;
+			_.rename(obj, 'eo:azimuth', 'view:azimuth') && _.addExtension(context, SCHEMAS.view) && DONE;
+			_.rename(obj, 'eo:incidence_angle', 'view:incidence_angle') && _.addExtension(context, SCHEMAS.view) && DONE;
+			_.rename(obj, 'eo:sun_azimuth', 'view:sun_azimuth') && _.addExtension(context, SCHEMAS.view) && DONE;
+			_.rename(obj, 'eo:sun_elevation', 'view:sun_elevation') && _.addExtension(context, SCHEMAS.view) && DONE;
 		}
 
 		V.before('1.0.0-beta.1') && _.rename(obj, 'eo:gsd', 'gsd') && DONE;
@@ -607,14 +611,14 @@ var Fields = {
 		let summary = !context;
 
 		// Which version have they been (re)moved?
-		_.rename(obj, 'sar:incidence_angle', 'view:incidence_angle') && _.addExtension(context, 'view') && DONE;
+		_.rename(obj, 'sar:incidence_angle', 'view:incidence_angle') && _.addExtension(context, SCHEMAS.view) && DONE;
 		_.rename(obj, 'sar:pass_direction', 'sat:orbit_state') && _.mapValues(obj, 'sat:orbit_state', [null], ['geostationary']) && _.addExtension(context, SCHEMAS.sat) && DONE;
 
 		if (V.before('0.7.0')) {
 			_.flattenArray(obj, 'sar:resolution', ['sar:resolution_range', 'sar:resolution_azimuth'], summary) && DONE;
 			_.flattenArray(obj, 'sar:pixel_spacing', ['sar:pixel_spacing_range', 'sar:pixel_spacing_azimuth'], summary) && DONE;
 			_.flattenArray(obj, 'sar:looks', ['sar:looks_range', 'sar:looks_azimuth', 'sar:looks_equivalent_number'], summary) && DONE;
-			_.rename(obj, 'sar:off_nadir', 'view:off_nadir') && _.addExtension(context, 'view') && DONE;
+			_.rename(obj, 'sar:off_nadir', 'view:off_nadir') && _.addExtension(context, SCHEMAS.view) && DONE;
 		}
 
 		if (V.before('0.9.0')) {
