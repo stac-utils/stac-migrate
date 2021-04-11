@@ -1,6 +1,6 @@
 {
 	"name": "@radiantearth/stac-migrate",
-	"version": "1.0.0-rc.2",
+	"version": "1.0.0-rc.3",
 	"description": "A library to update STAC files to the latest version.",
 	"main": "migrate.js",
 	"bugs": {
