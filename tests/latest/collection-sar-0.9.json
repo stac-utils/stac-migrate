@@ -1,13 +1,17 @@
 {
-	"stac_version":"1.0.0-rc.2",
+	"stac_version":"1.0.0-rc.4",
 	"stac_extensions": [],
 	"type":"Collection",
 	"id":"S1A_EW_GRDM_1SSH_20181103T235855_20181103T235955_024430_02AD5D_5616",
 	"description": "Single asset collection with SAR data",
 	"license": "proprietary",
 	"extent":{
-		"spatial":[-70.275032,-64.72924,-65.087479,-51.105831],
-		"temporal":["2018-11-03T23:58:55.121559Z","2018-11-03T23:59:55.112875Z"]
+		"spatial":{
+			"bbox":[[-70.275032,-64.72924,-65.087479,-51.105831]]
+		},
+		"temporal":{
+			"interval":[["2018-11-03T23:58:55.121559Z","2018-11-03T23:59:55.112875Z"]]
+		}
 	},
 	"summaries":{
 		"start_datetime":["2018-11-03T23:58:55.121559Z"],

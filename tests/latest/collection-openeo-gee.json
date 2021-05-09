@@ -1,5 +1,5 @@
 {
-	"stac_version":"1.0.0-rc.2",
+	"stac_version":"1.0.0-rc.4",
 	"stac_extensions": [
 		"https://stac-extensions.github.io/datacube/v1.0.0/schema.json",
 		"https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
@@ -36,9 +36,9 @@
 		"spatial":{
 			"bbox":[
 				[
-					180,
-					-56,
 					-180,
+					-56,
+					180,
 					83
 				]
 			]

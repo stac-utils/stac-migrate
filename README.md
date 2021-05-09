@@ -1,6 +1,6 @@
 # stac-migrate
 
-A library to update STAC files to the latest version (**1.0.0-rc.2** at the moment of writing). Supports updating **STAC versions 0.6.0 and later**.
+A library to update STAC files to the latest version (**1.0.0-rc.4** at the moment of writing). Supports updating **STAC versions 0.6.0 and later**.
 
 Version of this library: **1.0.0-rc.3**
 

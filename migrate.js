@@ -4,7 +4,7 @@
 
 var compareVersions = require('compare-versions');
 
-const LATEST_VERSION = '1.0.0-rc.2';
+const LATEST_VERSION = '1.0.0-rc.4';
 const DONE = true; // This is used to verify in code coverage whether something has been used or not
 const SCHEMAS = {
 	'datacube': 'https://stac-extensions.github.io/datacube/v1.0.0/schema.json',
@@ -267,6 +267,24 @@ var _ = {
 				migrations[fn](obj, context);
 			}
 		}
+	},
+
+	toUTC(obj, key) {
+		if (typeof obj[key] === 'string') {
+			try {
+				obj[key] = this.toISOString(obj[key]);
+				return true;
+			} catch(error) {}
+		}
+		delete obj[key];
+		return false;
+	},
+
+	toISOString(date) {
+		if (!(date instanceof Date)) {
+			date = new Date(date);
+		}
+		return date.toISOString().replace('.000', ''); // Don't export milliseconds if not needed
 	}
 
 };
@@ -367,6 +385,63 @@ var Collection = {
 						collection.extent.temporal
 					]
 				};
+			}
+		}
+
+		if (V.before('1.0.0-rc.3')) {
+			// The first extent in a Collection is always the overall extent, followed by more specific extents.
+			if (Array.isArray(collection.extent.temporal.interval) && collection.extent.temporal.interval.length > 1) {
+				let min, max;
+				for(let interval of collection.extent.temporal.interval) {
+					if (interval[0] === null) {
+						min = null;
+					}
+					else if (typeof interval[0] === 'string' && min !== null) {
+						try {
+							let start = new Date(interval[0]);
+							if (typeof min === 'undefined' || start < min) {
+								min = start;
+							}
+						} catch (error) {}
+					}
+
+					if (interval[1] === null) {
+						max = null;
+					}
+					else if (typeof interval[1] === 'string' && max !== null) {
+						try {
+							let end = new Date(interval[1]);
+							if (typeof max === 'undefined' || end > max) {
+								max = end;
+							}
+						} catch (error) {}
+					} 
+				}
+				collection.extent.temporal.interval.unshift([
+					min ? _.toISOString(min) : null,
+					max ? _.toISOString(max) : null
+				]);
+			}
+			if (Array.isArray(collection.extent.spatial.bbox) && collection.extent.spatial.bbox.length > 1) {
+				let count = collection.extent.spatial.bbox.reduce((val, bbox) => Math.max(bbox.length, val), 4);
+				let union = new Array(count).fill(null);
+				let middle = count / 2;
+				for(let bbox of collection.extent.spatial.bbox) {
+					for(let i in bbox) {
+						let c = bbox[i];
+						if (union[i] === null) {
+							union[i] = c;
+						}
+						else if (i < middle) {
+							union[i] = Math.min(c, union[i]);
+						}
+						else {
+							union[i] = Math.max(c, union[i]);
+						}
+
+					}
+				}
+				collection.extent.spatial.bbox.unshift(union);
 			}
 		}
 	},
@@ -535,11 +610,19 @@ var Fields = {
 	},
 
 	_commonMetadata(obj) {
-		// Nothing to do
+		// Timestamps must be always in UTC
+		// datetime, start_datetime and end_datetime already required UTC before
+		if (V.before('1.0.0-rc.3')) {
+			_.toUTC(obj, 'created') && DONE;
+			_.toUTC(obj, 'updated') && DONE;
+		}
 	},
 
 	_timestamps(obj) {
-		// Nothing to do
+		// Timestamps must be always in UTC
+		_.toUTC(obj, 'published') && DONE;
+		_.toUTC(obj, 'expires') && DONE;
+		_.toUTC(obj, 'unpublished') && DONE;
 	},
 
 	_versioningIndicator(obj) {

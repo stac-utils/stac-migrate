@@ -7,8 +7,12 @@
 	"description": "Single asset collection with SAR data",
 	"license": "proprietary",
 	"extent":{
-		"spatial":[-70.275032,-64.72924,-65.087479,-51.105831],
-		"temporal":["2018-11-03T23:58:55.121559Z","2018-11-03T23:59:55.112875Z"]
+		"spatial":{
+			"bbox":[[-70.275032,-64.72924,-65.087479,-51.105831]]
+		},
+		"temporal":{
+			"interval":[["2018-11-03T23:58:55.121559Z","2018-11-03T23:59:55.112875Z"]]
+		}
 	},
 	"properties":{
 		"start_datetime":"2018-11-03T23:58:55.121559Z",
