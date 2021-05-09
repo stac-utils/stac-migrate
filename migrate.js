@@ -203,6 +203,12 @@ var _ = {
 		if ((type == 'item' || type == 'collection') && _.isObject(context.assets)) {
 			objectsToCheck = objectsToCheck.concat(Object.values(context.assets));
 		}
+		if (type == 'collection' && _.isObject(context.item_assets)) {
+			objectsToCheck = objectsToCheck.concat(Object.values(context.item_assets));
+		}
+		if (type == 'collection' && _.isObject(context.summaries)) {
+			objectsToCheck = objectsToCheck.concat(Object.values(context.summaries));
+		}
 		if (type == 'item' && _.isObject(context.properties)) {
 			objectsToCheck.push(context.properties);
 		}
