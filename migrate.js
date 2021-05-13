@@ -429,25 +429,32 @@ var Collection = {
 				]);
 			}
 			if (Array.isArray(collection.extent.spatial.bbox) && collection.extent.spatial.bbox.length > 1) {
-				let count = collection.extent.spatial.bbox.reduce((val, bbox) => Math.max(bbox.length, val), 4);
-				let union = new Array(count).fill(null);
-				let middle = count / 2;
-				for(let bbox of collection.extent.spatial.bbox) {
-					for(let i in bbox) {
-						let c = bbox[i];
-						if (union[i] === null) {
-							union[i] = c;
+				let count = collection.extent.spatial.bbox.reduce((val, bbox) => Array.isArray(bbox) ? Math.max(bbox.length, val) : val, 4);
+				if (count >= 4) {
+					let union = new Array(count).fill(null);
+					let middle = count / 2;
+					for(let bbox of collection.extent.spatial.bbox) {
+						if (!Array.isArray(bbox) || bbox.length < 4) {
+							break;
 						}
-						else if (i < middle) {
-							union[i] = Math.min(c, union[i]);
-						}
-						else {
-							union[i] = Math.max(c, union[i]);
-						}
+						for(let i in bbox) {
+							let c = bbox[i];
+							if (union[i] === null) {
+								union[i] = c;
+							}
+							else if (i < middle) {
+								union[i] = Math.min(c, union[i]);
+							}
+							else {
+								union[i] = Math.max(c, union[i]);
+							}
 
+						}
+					}
+					if (union.findIndex(c => c === null) === -1) {
+						collection.extent.spatial.bbox.unshift(union);
 					}
 				}
-				collection.extent.spatial.bbox.unshift(union);
 			}
 		}
 	},
