@@ -327,9 +327,11 @@ var Checksum = {
 
 var Catalog = {
 
-	migrate(catalog) {
+	migrate(catalog, updateVersionNumber = true) {
 		V.set(catalog.stac_version);
-		catalog.stac_version = LATEST_VERSION;
+		if (updateVersionNumber) {
+			catalog.stac_version = LATEST_VERSION;
+		}
 		catalog.type = 'Catalog';
 		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(catalog) && DONE;
 
@@ -347,8 +349,8 @@ var Catalog = {
 
 var Collection = {
 
-	migrate(collection) {
-		Catalog.migrate(collection); // Migrates stac_version, stac_extensions, id, title, description, links
+	migrate(collection, updateVersionNumber = true) {
+		Catalog.migrate(collection, updateVersionNumber); // Migrates stac_version, stac_extensions, id, title, description, links
 		collection.type = 'Collection';
 		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(collection) && DONE;
 
@@ -538,9 +540,11 @@ var Collection = {
 
 var Item = {
 
-	migrate(item, collection = null) {
+	migrate(item, collection = null, updateVersionNumber = true) {
 		V.set(item.stac_version);
-		item.stac_version = LATEST_VERSION;
+		if (updateVersionNumber) {
+			item.stac_version = LATEST_VERSION;
+		}
 		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(item) && DONE;
 
 		_.ensure(item, 'id', '') && DONE;
@@ -758,33 +762,31 @@ var Fields = {
 
 var Migrate = {
 
-	item(item, collection = null) {
-		Item.migrate(item, collection);
+	item(item, collection = null, updateVersionNumber = true) {
+		Item.migrate(item, collection, updateVersionNumber);
 		return item;
 	},
 	
-	catalog(catalog) {
-		Catalog.migrate(catalog);
+	catalog(catalog, updateVersionNumber = true) {
+		Catalog.migrate(catalog, updateVersionNumber);
 		return catalog;
 	},
 	
-	collection(collection) {
-		Collection.migrate(collection);
+	collection(collection, updateVersionNumber = true) {
+		Collection.migrate(collection, updateVersionNumber);
 		return collection;
 	},
 	
-	stac(object) {
-		let type;
+	stac(object, updateVersionNumber = true) {
 		if (object.type === 'Feature') {
-			type = 'item';
+			return Migrate.item(object, null, updateVersionNumber);
 		}
 		else if (object.type === 'Collection' || _.isDefined(object.extent) || _.isDefined(object.license)) {
-			type = 'collection';
+			return Migrate.collection(object,  updateVersionNumber);
 		}
 		else {
-			type = 'catalog';
+			return Migrate.catalog(object, updateVersionNumber);
 		}
-		return Migrate[type](object);
 	}
 
 };
