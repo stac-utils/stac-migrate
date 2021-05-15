@@ -778,7 +778,7 @@ var Migrate = {
 		if (object.type === 'Feature') {
 			type = 'item';
 		}
-		else if (_.isDefined(object.extent) || _.isDefined(object.license)) {
+		else if (object.type === 'Collection' || _.isDefined(object.extent) || _.isDefined(object.license)) {
 			type = 'collection';
 		}
 		else {
