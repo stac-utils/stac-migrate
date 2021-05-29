@@ -1,8 +1,8 @@
 # stac-migrate
 
-A library to update STAC files to the latest version (**1.0.0-rc.4** at the moment of writing). Supports updating **STAC versions 0.6.0 and later**.
+A library to update STAC files to the latest version (**1.0.0** at the moment of writing). Supports updating **STAC versions 0.6.0 and later**.
 
-Version of this library: **1.0.0-rc.5**
+Version of this library: **1.0.0**
 
 ## Usage
 
@@ -21,25 +21,26 @@ Import the library: `const Migrate = require('@radiantearth/stac-migrate');`
 
 ##  Supported Extensions
 
-* Checksum
-* Collection Assets
+* Checksum 1.0.0
+* Collection Assets 1.0.0
 * Commons
-* Data Cube
+* Data Cube 1.0.0
 * Datetime Range
-* Electro-Optical
-* File
-* (Item) Asset Definition
-* Label
-* Point Cloud
-* Procesing
-* Projection
-* SAR
-* Satellite
-* Scientific
+* Electro-Optical 1.0.0
+* File 1.0.0
+* (Item) Asset Definition 1.0.0
+* Label 1.0.0
+* Point Cloud 1.0.0
+* Procesing 1.0.0
+* Projection 1.0.0
+* Raster 1.0.0
+* SAR 1.0.0
+* Satellite 1.0.0
+* Scientific 1.0.0
 * Single Item
-* Timestamps
-* Versioning Indicators
-* View Geometry
+* Timestamps 1.0.0
+* Versioning Indicators 1.0.0
+* View Geometry 1.0.0
 
 ## Development
 

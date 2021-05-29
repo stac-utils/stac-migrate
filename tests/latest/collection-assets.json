@@ -1,5 +1,5 @@
 {
-	"stac_version":"1.0.0-rc.4",
+	"stac_version":"1.0.0",
 	"stac_extensions": [
 		"https://stac-extensions.github.io/file/v1.0.0/schema.json",
 		"https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
@@ -11,6 +11,12 @@
 	"assets": {
 		"preview": {
 			"href": "http://example.com/collection/preview.png",
+			"type": "image/png",
+			"file:checksum": "12209f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+		}
+	},
+	"item_assets": {
+		"preview": {
 			"type": "image/png",
 			"file:checksum": "12209f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
 		}

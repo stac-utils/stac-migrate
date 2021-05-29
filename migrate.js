@@ -4,7 +4,7 @@
 
 var compareVersions = require('compare-versions');
 
-const LATEST_VERSION = '1.0.0-rc.4';
+const LATEST_VERSION = '1.0.0';
 const DONE = true; // This is used to verify in code coverage whether something has been used or not
 const SCHEMAS = {
 	'datacube': 'https://stac-extensions.github.io/datacube/v1.0.0/schema.json',
@@ -15,6 +15,7 @@ const SCHEMAS = {
 	'pointcloud': 'https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json',
 	'processing': 'https://stac-extensions.github.io/processing/v1.0.0/schema.json',
 	'projection': 'https://stac-extensions.github.io/projection/v1.0.0/schema.json',
+	'raster': 'https://stac-extensions.github.io/raster/v1.0.0/schema.json',
 	'sar': 'https://stac-extensions.github.io/sar/v1.0.0/schema.json',
 	'sat': 'https://stac-extensions.github.io/sat/v1.0.0/schema.json',
 	'scientific': 'https://stac-extensions.github.io/scientific/v1.0.0/schema.json',
@@ -33,6 +34,7 @@ const EXTENSIONS = {
 		'pc:': SCHEMAS.pointcloud,
 		'processing:': SCHEMAS.processing,
 		'proj:': SCHEMAS.projection,
+		'raster:': SCHEMAS.raster,
 		'sar:': SCHEMAS.sar,
 		'sat:': SCHEMAS.sat,
 		'sci:': SCHEMAS.scientific,
