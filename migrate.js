@@ -596,7 +596,7 @@ var Asset = {
 	},
 
 	mediaTypes(asset) {
-		_.is(asset.type, 'string') && V.before('0.8.0') && _.mapValues(
+		_.is(asset.type, 'string') && _.mapValues(
 			asset, 'type',
 			['image/vnd.stac.geotiff', 			'image/vnd.stac.geotiff; cloud-optimized=true'],
 			['image/tiff; application=geotiff',	'image/tiff; application=geotiff; profile=cloud-optimized']
