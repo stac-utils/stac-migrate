@@ -359,10 +359,10 @@ var Collection = {
 		_.ensure(collection, 'license', 'proprietary') && DONE;
 		_.ensure(collection, 'extent', {
 			spatial: {
-				interval: []
+				bbox: []
 			},
 			temporal: {
-				bbox: []
+				interval: []
 			}
 		}) && DONE;
 
