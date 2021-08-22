@@ -345,7 +345,15 @@ var Catalog = {
 
 		_.ensure(catalog, 'stac_extensions', []) && DONE;
 		V.before('0.8.0') && _.populateExtensions(catalog, 'catalog') && DONE;
-	}
+	},
+
+	openeo(obj) {
+		_.rename(obj, 'api_version', 'openeo:api_version') && DONE;
+		_.rename(obj, 'backend_version', 'openeo:backend_version') && DONE;
+		_.rename(obj, 'production', 'openeo:production') && DONE;
+		_.rename(obj, 'endpoints', 'openeo:endpoints') && DONE;
+		_.rename(obj, 'billing', 'openeo:billing') && DONE;
+	},
 
 };
 
