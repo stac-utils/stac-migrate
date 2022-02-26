@@ -387,6 +387,8 @@ var Collection = {
 	},
 
 	extent(collection) {
+		_.ensure(collection, "extent", {});
+
 		if (V.before('0.8.0')) {
 			// Restructure spatial extent
 			if (Array.isArray(collection.extent.spatial)) {
@@ -406,9 +408,14 @@ var Collection = {
 			}
 		}
 
+		_.ensure(collection.extent, "spatial", {});
+		_.ensure(collection.extent.spatial, "bbox", []);
+		_.ensure(collection.extent, "temporal", {});
+		_.ensure(collection.extent.temporal, "interval", []);
+
 		if (V.before('1.0.0-rc.3')) {
 			// The first extent in a Collection is always the overall extent, followed by more specific extents.
-			if (Array.isArray(collection.extent.temporal.interval) && collection.extent.temporal.interval.length > 1) {
+			if (collection.extent.temporal.interval.length > 1) {
 				let min, max;
 				for(let interval of collection.extent.temporal.interval) {
 					if (interval[0] === null) {
@@ -440,7 +447,7 @@ var Collection = {
 					max ? _.toISOString(max) : null
 				]);
 			}
-			if (Array.isArray(collection.extent.spatial.bbox) && collection.extent.spatial.bbox.length > 1) {
+			if (collection.extent.spatial.bbox.length > 1) {
 				let count = collection.extent.spatial.bbox.reduce((val, bbox) => Array.isArray(bbox) ? Math.max(bbox.length, val) : val, 4);
 				if (count >= 4) {
 					let union = new Array(count).fill(null);
