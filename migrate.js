@@ -250,6 +250,7 @@ var _ = {
 	},
 
 	moveTo(obj, key, context, fromSummary = false, mergedSummary = false) {
+		let condition;
 		if (fromSummary) {
 			if (mergedSummary) {
 				condition = val => Array.isArray(val);
