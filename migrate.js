@@ -300,6 +300,8 @@ var _ = {
 
 var Checksum = {
 
+	multihash: null,
+
 	hexToUint8(hexString) {
 		if(hexString.length === 0 || hexString.length % 2 !== 0){
 			throw new Error(`The string "${hexString}" is not valid hex.`)
@@ -312,12 +314,11 @@ var Checksum = {
 	},
 
 	toMultihash(obj, key, algo) {
-		if (!_.is(obj[key], 'string')) {
+		if (!Checksum.multihash || !_.is(obj[key], 'string')) {
 			return false;
 		}
 		try {
-			const multihash = require('multihashes');
-			const encoded = multihash.encode(Checksum.hexToUint8(obj[key]), algo);
+			const encoded = Checksum.multihash.encode(Checksum.hexToUint8(obj[key]), algo);
 			obj[key] = Checksum.uint8ToHex(encoded);
 			return true;
 		} catch (error) {
@@ -665,7 +666,7 @@ var Fields = {
 	},
 
 	checksum(obj, context) {
-		if (V.before('0.9.0')) {
+		if (V.before('0.9.0') && Checksum.multihash) {
 			_.rename(obj, 'checksum:md5', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'md5') && DONE;
 			_.rename(obj, 'checksum:sha1', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'sha1') && DONE;
 			// We assume sha2/3-256 although that may fail in some cases and other lengths are chosen
@@ -805,6 +806,10 @@ var Migrate = {
 		else {
 			return Migrate.catalog(object, updateVersionNumber);
 		}
+	},
+
+	enableMultihash(multihash) {
+		Checksum.multihash = multihash;
 	}
 
 };

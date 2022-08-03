@@ -21,7 +21,7 @@ Import the library: `const Migrate = require('@radiantearth/stac-migrate');`
 
 ##  Supported Extensions
 
-* Checksum
+* Checksum (use `Migrate.enableMultihash(require('multihashes'))` to enable conversion from pre-0.9 checksums - disabled by default to keep the bundle size low)
 * Collection Assets 1.0.0
 * Commons
 * Data Cube 1.0.0
