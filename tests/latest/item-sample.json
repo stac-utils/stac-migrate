@@ -41,7 +41,7 @@
     "instruments": ["msi"],
     "view:sun_elevation": 33.4,
     "gsd": 0.512,
-    "created": "2016-05-02T08:00:00Z"
+    "created": "2016-05-02T00:00:00Z"
   },
   "links": [
     {"rel": "self", "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/CS3-20160503_132130_04.json"},
