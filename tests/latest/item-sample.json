@@ -1,6 +1,7 @@
 {
   "stac_version": "1.0.0",
   "stac_extensions": [
+		"https://stac-extensions.github.io/classification/v1.1.0/schema.json",
     "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
 		"https://stac-extensions.github.io/file/v1.0.0/schema.json",
     "https://stac-extensions.github.io/view/v1.0.0/schema.json"
@@ -39,7 +40,8 @@
     "platform": "COOLSAT2",
     "instruments": ["msi"],
     "view:sun_elevation": 33.4,
-    "gsd": 0.512
+    "gsd": 0.512,
+    "created": "2016-05-02T08:00:00Z"
   },
   "links": [
     {"rel": "self", "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/CS3-20160503_132130_04.json"},
@@ -65,6 +67,22 @@
         },
         {
           "name": "B3"
+        }
+      ]
+    },
+    "mask": {
+      "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/mask.tif",
+      "classification:classes": [
+        {
+          "value": 0,
+          "name": "invalid",
+          "color_hint": "FFFFFF"
+        },
+        
+        {
+          "value": 1,
+          "name": "valid",
+          "color_hint": "000000"
         }
       ]
     }

@@ -21,23 +21,25 @@ Import the library: `const Migrate = require('@radiantearth/stac-migrate');`
 
 ##  Supported Extensions
 
-* Checksum (use `Migrate.enableMultihash(require('multihashes'))` to enable conversion from pre-0.9 checksums - disabled by default to keep the bundle size low)
-* Collection Assets 1.0.0
-* Commons
-* Data Cube 1.0.0
-* Datetime Range
+* Checksum (legacy, use `Migrate.enableMultihash(require('multihashes'))` to enable conversion from pre-0.9 checksums - disabled by default to keep the bundle size low)
+* Classification 1.1.0
+* Collection Assets (legacy)
+* Commons (legacy)
+* Data Cube 2.1.0
+* Datetime Range (legacy)
 * Electro-Optical 1.0.0
 * File 1.0.0
 * (Item) Asset Definition 1.0.0
-* Label 1.0.0
+* Label 1.0.1
 * Point Cloud 1.0.0
-* Procesing 1.0.0
+* Procesing 1.1.0
 * Projection 1.0.0
-* Raster 1.0.0
+* Raster 1.1.0
 * SAR 1.0.0
 * Satellite 1.0.0
-* Scientific 1.0.0
+* Scientific Citation 1.0.0
 * Single Item
+* Table 1.2.0
 * Timestamps 1.0.0
 * Versioning Indicators 1.0.0
 * View Geometry 1.0.0

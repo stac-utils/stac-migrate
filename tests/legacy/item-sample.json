@@ -1,5 +1,8 @@
 {
   "type": "Feature",
+  "stac_extensions": [
+		"https://stac-extensions.github.io/classification/v1.0.0/schema.json"
+  ],
   "id" : "CS3-20160503_132131_05",
   "bbox": [-122.59750209, 37.48803556, -122.2880486, 37.613537207],
   "geometry": {
@@ -33,7 +36,8 @@
     "eo:platform": "COOLSAT2",
     "eo:instrument": "msi",
     "eo:sun_elevation": 33.4,
-    "eo:gsd": 0.512
+    "eo:gsd": 0.512,
+    "created": "2016-05-02T08:00:00.000+08:00"
   },
   "links": [
     {"rel": "self", "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/CS3-20160503_132130_04.json"},
@@ -52,6 +56,22 @@
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/b1.tif",
       "type": "image/vnd.stac.geotiff; cloud-optimized=true",
       "eo:bands": [1,2]
+    },
+    "mask": {
+      "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/mask.tif",
+      "classification:classes": [
+        {
+          "value": 0,
+          "name": "invalid",
+          "color-hint": "FFFFFF"
+        },
+        
+        {
+          "value": 1,
+          "name": "valid",
+          "color-hint": "000000"
+        }
+      ]
     }
   }
 }

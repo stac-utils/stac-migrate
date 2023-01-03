@@ -7,18 +7,20 @@ var compareVersions = require('compare-versions');
 const LATEST_VERSION = '1.0.0';
 const DONE = true; // This is used to verify in code coverage whether something has been used or not
 const SCHEMAS = {
-	'datacube': 'https://stac-extensions.github.io/datacube/v1.0.0/schema.json',
+	'classification': 'https://stac-extensions.github.io/classification/v1.1.0/schema.json',
+	'datacube': 'https://stac-extensions.github.io/datacube/v2.1.0/schema.json',
 	'eo': 'https://stac-extensions.github.io/eo/v1.0.0/schema.json',
 	'file': 'https://stac-extensions.github.io/file/v1.0.0/schema.json',
 	'item-assets': 'https://stac-extensions.github.io/item-assets/v1.0.0/schema.json',
-	'label': 'https://stac-extensions.github.io/label/v1.0.0/schema.json',
+	'label': 'https://stac-extensions.github.io/label/v1.0.1/schema.json',
 	'pointcloud': 'https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json',
-	'processing': 'https://stac-extensions.github.io/processing/v1.0.0/schema.json',
+	'processing': 'https://stac-extensions.github.io/processing/v1.1.0/schema.json',
 	'projection': 'https://stac-extensions.github.io/projection/v1.0.0/schema.json',
-	'raster': 'https://stac-extensions.github.io/raster/v1.0.0/schema.json',
+	'raster': 'https://stac-extensions.github.io/raster/v1.1.0/schema.json',
 	'sar': 'https://stac-extensions.github.io/sar/v1.0.0/schema.json',
 	'sat': 'https://stac-extensions.github.io/sat/v1.0.0/schema.json',
 	'scientific': 'https://stac-extensions.github.io/scientific/v1.0.0/schema.json',
+	'table': 'https://stac-extensions.github.io/table/v1.2.0/schema.json',
 	'timestamps': 'https://stac-extensions.github.io/timestamps/v1.0.0/schema.json',
 	'version': 'https://stac-extensions.github.io/version/v1.0.0/schema.json',
 	'view': 'https://stac-extensions.github.io/view/v1.0.0/schema.json'
@@ -59,18 +61,48 @@ const EXTENSIONS = {
 EXTENSIONS.collection = Object.assign(EXTENSIONS.collection, EXTENSIONS.itemAndCollection);
 EXTENSIONS.item = Object.assign(EXTENSIONS.item, EXTENSIONS.itemAndCollection);
 
+var Ext = {
+	parseUrl(url) {
+		let match = url.match(/^https?:\/\/stac-extensions.github.io\/([^\/]+)\/v([^\/]+)\/[^.]+.json$/i);
+		if (match) {
+			return {
+				id: match[1],
+				version: match[2]
+			};
+		}
+	}
+};
+
 var V = {
 	version: LATEST_VERSION,
+	extensions: {},
 
-	set(version) {
-		if (!version) {
-			version = '0.6.0'; // Assume the worst case, it doesn't seem there's a clear indicator for 0.7.0
+	set(stac) {
+		if (typeof stac.stac_version !== 'string') {
+			V.version = '0.6.0'; // Assume the worst case, it doesn't seem there's a clear indicator for 0.7.0
 		}
-		V.version = version;
+		else {
+			V.version = stac.stac_version;
+		}
+
+		if (Array.isArray(stac.stac_extensions)) {
+			for(let ext of stac.stac_extensions) {
+				let e = Ext.parseUrl(ext);
+				if (e) {
+					V.extensions[e.id] = e.version;
+				}
+			}
+		}
 	},
 
-	before(version) {
-		return compareVersions.compare(V.version, version, '<');
+	before(version, ext = null) {
+		let compareTo = ext ? V.extensions[ext] : V.version;
+		if (typeof compareTo === 'undefined') {
+			return false;
+		}
+		else {
+			return compareVersions.compare(compareTo, version, '<');
+		}
 	}
 };
 
@@ -108,6 +140,14 @@ var _ = {
 			return true;
 		}
 		return false;
+	},
+
+	forAll(obj, key, fn) {
+		if (obj[key] && typeof obj[key] === 'object') {
+			for(let i in obj[key]) {
+				fn(obj[key][i]);
+			}
+		}
 	},
 
 	toArray(obj, key) {
@@ -156,18 +196,6 @@ var _ = {
 		return false;
 	},
 
-	addToArrayIfNotExists(obj, key, valueToAdd) {
-		if (Array.isArray(obj[key])) {
-			let index = obj[key].indexOf(valueToAdd);
-			if (index === -1) {
-				obj[key].push(valueToAdd);
-			}
-			obj[key].sort();
-			return true;
-		}
-		return false;
-	},
-
 	ensure(obj, key, defaultValue) {
 		if (_.type(defaultValue) !== _.type(obj[key])) {
 			obj[key] = defaultValue;
@@ -175,20 +203,46 @@ var _ = {
 		return true;
 	},
 
+	upgradeExtension(context, extension) {
+		let {id, version} = Ext.parseUrl(extension);
+		let index = context.stac_extensions.findIndex(url => {
+			let old = Ext.parseUrl(url);
+			return (old && old.id === id && compareVersions.compare(old.version, version, '<'));
+		});
+		if (index !== -1) {
+			context.stac_extensions[index] = extension;
+			return true;
+		}
+		else {
+			return false;
+		}
+	},
+
 	addExtension(context, newExtension) {
-		if (!_.isObject(context)) {
-			return true; // We are likely in summaries and don't need to do anything
+		let {id, version} = Ext.parseUrl(newExtension);
+		let index = context.stac_extensions.findIndex(url => {
+			if (url === newExtension) {
+				return true;
+			}
+			let old = Ext.parseUrl(url);
+			if (old && old.id === id && compareVersions.compare(old.version, version, '<')) {
+				return true;
+			}
+			return false;
+		});
+		if (index === -1) {
+			context.stac_extensions.push(newExtension);
+		}
+		else {
+			context.stac_extensions[index] = newExtension;
 		}
 
-		return _.addToArrayIfNotExists(context, 'stac_extensions', newExtension) && DONE;
+		context.stac_extensions.sort();
+		return true;
 	},
 
 	removeExtension(context, oldExtension) {
-		if (!_.isObject(context)) {
-			return true; // We are likely in summaries and don't need to do anything
-		}
-
-		return _.removeFromArray(context, 'stac_extensions', oldExtension) && DONE;
+		return _.removeFromArray(context, 'stac_extensions', oldExtension);
 	},
 
 	migrateExtensionShortnames(context) {
@@ -209,7 +263,7 @@ var _ = {
 			objectsToCheck = objectsToCheck.concat(Object.values(context.item_assets));
 		}
 		if (type == 'collection' && _.isObject(context.summaries)) {
-			objectsToCheck = objectsToCheck.concat(Object.values(context.summaries));
+			objectsToCheck.push(context.summaries);
 		}
 		if (type == 'item' && _.isObject(context.properties)) {
 			objectsToCheck.push(context.properties);
@@ -270,10 +324,10 @@ var _ = {
 		return false;
 	},
 
-	runAll(migrations, obj, context = null) {
+	runAll(migrations, obj, context, summaries) {
 		for(let fn in migrations) {
 			if (!fn.startsWith('migrate')) {
-				migrations[fn](obj, context);
+				migrations[fn](obj, context, summaries);
 			}
 		}
 	},
@@ -306,7 +360,7 @@ var Checksum = {
 		if(hexString.length === 0 || hexString.length % 2 !== 0){
 			throw new Error(`The string "${hexString}" is not valid hex.`)
 		}
-  		return new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+		return new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
 	},
 
 	uint8ToHex(bytes) {
@@ -332,11 +386,13 @@ var Checksum = {
 var Catalog = {
 
 	migrate(catalog, updateVersionNumber = true) {
-		V.set(catalog.stac_version);
+		V.set(catalog);
 		if (updateVersionNumber) {
 			catalog.stac_version = LATEST_VERSION;
 		}
 		catalog.type = 'Catalog';
+
+		_.ensure(catalog, 'stac_extensions', []) && DONE;
 		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(catalog) && DONE;
 
 		_.ensure(catalog, 'id', '') && DONE;
@@ -345,7 +401,6 @@ var Catalog = {
 
 		_.runAll(Catalog, catalog, catalog);
 
-		_.ensure(catalog, 'stac_extensions', []) && DONE;
 		V.before('0.8.0') && _.populateExtensions(catalog, 'catalog') && DONE;
 	},
 
@@ -364,6 +419,7 @@ var Collection = {
 	migrate(collection, updateVersionNumber = true) {
 		Catalog.migrate(collection, updateVersionNumber); // Migrates stac_version, stac_extensions, id, title, description, links
 		collection.type = 'Collection';
+		
 		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(collection) && DONE;
 
 		_.ensure(collection, 'license', 'proprietary') && DONE;
@@ -541,7 +597,7 @@ var Collection = {
 		}
 
 		// now we can work on all summaries and migrate them
-		Fields.migrate(collection.summaries);
+		Fields.migrate(collection.summaries, collection, true);
 
 		// Some fields should usually be on root-level if there's only one element
 		_.moveTo(collection.summaries, 'sci:doi', collection, true) && _.addExtension(collection, SCHEMAS.scientific) && DONE;
@@ -560,10 +616,12 @@ var Collection = {
 var Item = {
 
 	migrate(item, collection = null, updateVersionNumber = true) {
-		V.set(item.stac_version);
+		V.set(item);
 		if (updateVersionNumber) {
 			item.stac_version = LATEST_VERSION;
 		}
+
+		_.ensure(item, 'stac_extensions', []) && DONE;
 		V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(item) && DONE;
 
 		_.ensure(item, 'id', '') && DONE;
@@ -592,7 +650,6 @@ var Item = {
 
 		Asset.migrateAll(item);
 
-		_.ensure(item, 'stac_extensions', []) && DONE;
 		// Also populate extensions if commons has been implemented
 		(V.before('0.8.0') || commons) && _.populateExtensions(item, 'item') && DONE;
 	}
@@ -640,9 +697,8 @@ var Asset = {
 
 var Fields = {
 
-	// If no context is given, we are working in summaries
-	migrate(obj, context) {
-		_.runAll(Fields, obj, context);
+	migrate(obj, context, summaries = false) {
+		_.runAll(Fields, obj, context, summaries);
 	},
 
 	_commonMetadata(obj) {
@@ -654,15 +710,19 @@ var Fields = {
 		}
 	},
 
-	_timestamps(obj) {
+	_timestamps(obj, context) {
 		// Timestamps must be always in UTC
 		_.toUTC(obj, 'published') && DONE;
 		_.toUTC(obj, 'expires') && DONE;
 		_.toUTC(obj, 'unpublished') && DONE;
+
+		_.upgradeExtension(context, SCHEMAS.timestamps);
 	},
 
-	_versioningIndicator(obj) {
+	_versioningIndicator(obj, context) {
 		// Nothing to do
+
+		_.upgradeExtension(context, SCHEMAS.version);
 	},
 
 	checksum(obj, context) {
@@ -676,10 +736,23 @@ var Fields = {
 		}
 
 		V.before('1.0.0-rc.1') && _.rename(obj, 'checksum:multihash', 'file:checksum') && _.addExtension(context, SCHEMAS.file) && DONE;
+
+		_.removeExtension(context, 'checksum');
 	},
 
-	cube() {
-		// Nothing to do
+	classification(obj, context) {
+		if (V.before('1.1.0', 'classification')) {
+			_.forAll(obj, 'classification:classes', o => _.rename(o, 'color-hint', 'color_hint')) && DONE;
+		}
+
+		_.upgradeExtension(context, SCHEMAS.classification);
+	},
+
+	cube(obj, context) {
+		// We'd need to convert proj strings to something else for v1.0 -> v2.0, but that's unfeasible here.
+		// Nothing else to do here.
+
+		_.upgradeExtension(context, SCHEMAS.datacube);
 	},
 
 	dtr(obj, context) {
@@ -704,9 +777,17 @@ var Fields = {
 		}
 
 		V.before('1.0.0-beta.1') && _.rename(obj, 'eo:gsd', 'gsd') && DONE;
+
+		_.upgradeExtension(context, SCHEMAS.eo);
 	},
 
-	label(obj) {
+	file(obj, context) {
+		// TODO: Migrate to v2.1.0 - https://github.com/stac-utils/stac-migrate/issues/7
+
+		_.upgradeExtension(context, SCHEMAS.file);
+	},
+
+	label(obj, context) {
 		// Migrate 0.8.0-rc1 non-pluralized forms
 		if (V.before('0.8.0')) {
 			_.rename(obj, 'label:property', 'label:properties') && DONE;
@@ -715,20 +796,35 @@ var Fields = {
 			_.rename(obj, 'label:method', 'label:methods') && DONE;
 			_.toArray(obj, 'label:classes') && DONE;
 		}
+
+		_.upgradeExtension(context, SCHEMAS.label);
 	},
 
-	pc(obj) {
+	pc(obj, context) {
 		V.before('0.8.0') && _.rename(obj, 'pc:schema', 'pc:schemas') && DONE;
+
+		_.upgradeExtension(context, SCHEMAS.pointcloud);
 	},
 
-	proj(obj) {
+	processing(obj, context) {
 		// Nothing to do
+
+		_.upgradeExtension(context, SCHEMAS.processing);
 	},
 
-	sar(obj, context) {
-		// If no context is given, it's in summaries
-		let summary = !context;
+	proj(obj, context) {
+		// Nothing to do
 
+		_.upgradeExtension(context, SCHEMAS.projection);
+	},
+
+	raster(obj, context) {
+		// Nothing to do
+
+		_.upgradeExtension(context, SCHEMAS.raster);
+	},
+
+	sar(obj, context, summary) {
 		// Which version have they been (re)moved?
 		_.rename(obj, 'sar:incidence_angle', 'view:incidence_angle') && _.addExtension(context, SCHEMAS.view) && DONE;
 		_.rename(obj, 'sar:pass_direction', 'sat:orbit_state') && _.mapValues(obj, 'sat:orbit_state', [null], ['geostationary']) && _.addExtension(context, SCHEMAS.sat) && DONE;
@@ -749,9 +845,11 @@ var Fields = {
 			_.flattenOneElementArray(obj, 'sar:absolute_orbit', summary) && _.rename(obj, 'sar:absolute_orbit', 'sat:absolute_orbit') && _.addExtension(context, SCHEMAS.sat) && DONE;
 			_.flattenOneElementArray(obj, 'sar:relative_orbit', summary) && _.rename(obj, 'sar:relative_orbit', 'sat:relative_orbit') && _.addExtension(context, SCHEMAS.sat) && DONE;
 		}
+
+		_.upgradeExtension(context, SCHEMAS.sar);
 	},
 
-	sat(obj) {
+	sat(obj, context) {
 		// Migrate 0.9.0-rc _angle suffixes
 		if (V.before('0.9.0')) {
 			_.rename(obj, 'sat:off_nadir_angle', 'sat:off_nadir') && DONE;
@@ -759,10 +857,14 @@ var Fields = {
 			_.rename(obj, 'sat:sun_azimuth_angle', 'sat:sun_azimuth') && DONE;
 			_.rename(obj, 'sat:sun_elevation_angle', 'sat:sun_elevation') && DONE;
 		}
+
+		_.upgradeExtension(context, SCHEMAS.sat);
 	},
 
-	sci(obj) {
+	sci(obj, context) {
 		// Nothing to do
+
+		_.upgradeExtension(context, SCHEMAS.scientific);
 	},
 
 	item(obj) { // Single Item
@@ -773,8 +875,16 @@ var Fields = {
 		}
 	},
 
-	view(obj) {
+	table(obj, context) {
 		// Nothing to do
+
+		_.upgradeExtension(context, SCHEMAS.table);
+	},
+
+	view(obj, context) {
+		// Nothing to do
+
+		_.upgradeExtension(context, SCHEMAS.view);
 	}
 
 };
@@ -801,7 +911,7 @@ var Migrate = {
 			return Migrate.item(object, null, updateVersionNumber);
 		}
 		else if (object.type === 'Collection' || _.isDefined(object.extent) || _.isDefined(object.license)) {
-			return Migrate.collection(object,  updateVersionNumber);
+			return Migrate.collection(object, updateVersionNumber);
 		}
 		else {
 			return Migrate.catalog(object, updateVersionNumber);
