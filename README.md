@@ -2,9 +2,11 @@
 
 A library to update STAC files to the latest version (**1.0.0** at the moment of writing). Supports updating **STAC versions 0.6.0 and later**.
 
-Version of this library: **1.2.0**
+Version of this library: **1.3.0**
 
 ## Usage
+
+### JavaScript / Node
 
 Add to your project with `npm install @radiantearth/stac-migrate --save`
 
@@ -18,6 +20,17 @@ Import the library: `const Migrate = require('@radiantearth/stac-migrate');`
   *The `collection` parameter is only required to migrate the Commons extension. Otherwise, you don't need to pass this paramater.*
 
 **Note:** All changes will be applied in-place! If you don't want the input object to change, make a deep clone before. If you don't have a library which supports this (e.g. [lodash](https://lodash.com/docs/4.17.15#cloneDeep)) you can simply use `var clone = JSON.parse(JSON.stringify(object));`.
+
+### CLI
+
+You can also use the CLI to migrate a single file.
+The commands follow the different methods above and has the same "restrictions" as above.
+
+* Migrate (auto-detection, override): `npx stac-migrate <source_path>`
+* Migrate (auto-detection, save to a different file with 4 spaces indentation): `npx stac-migrate <source_path> --dest <dest_path> --indent 4`
+* Migrate a STAC Collection: `npx stac-migrate <source_path> <dest_path> --collection`
+* Migrate a STAC Catalog: `npx stac-migrate <source_path> <dest_path> --catalog`
+* Migrate a STAC Item: `npx stac-migrate <source_path> <dest_path> --item --collection_path <collection_path>`
 
 ##  Supported Extensions
 
