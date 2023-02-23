@@ -18,23 +18,28 @@ const args = yargs(hideBin(process.argv))
   .option('collection', {
     type: 'boolean',
     description: 'Enforce the collection migration',
-    conflicts: ['catalog', 'item'],
+    conflicts: ['catalog', 'item', 'item_collection'],
 
   })
   .option('catalog', {
     type: 'boolean',
     description: 'Enforce the catalog migration',
-    conflicts: ['collection', 'item',]
+    conflicts: ['collection', 'item', 'item_collection']
   })
   .option('item', {
     type: 'boolean',
     description: 'Enforce the item migration',
-    conflicts: ['catalog', 'collection']
+    conflicts: ['catalog', 'collection', 'item_collection']
+  })
+  .option('item_collection', {
+    type: 'boolean',
+    description: 'Enforce the item collection migration',
+    conflicts: ['catalog', 'collection', 'item']
   })
   .option('collection_path', {
     type: 'string',
     description: 'Pass the path to a collection to the item, only possible if --item has been specified.',
-    conflicts: ['catalog', 'collection']
+    conflicts: ['catalog', 'collection', 'item_collection']
   })
   .option('indent', {
     type: 'number',
@@ -48,9 +53,12 @@ run(args);
 
 function run(args) {
   console.log("STAC Migrate v" + package.version);
-  let fn = ['collection', 'catalog', 'item'].find(type => Boolean(args[type])) || 'stac';
+  let fn = ['collection', 'catalog', 'item', 'item_collection'].find(type => Boolean(args[type])) || 'stac';
+  if (fn === 'item_collection') {
+    fn = 'itemCollection';
+  }
   if (args._.length !== 1) {
-    throw new Error("Please provide exatctly one source file.");
+    throw new Error("Please provide exactly one source file.");
   }
   let src = args._[0];
   let dest = args.dest || src;

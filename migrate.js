@@ -402,6 +402,8 @@ var Catalog = {
 		_.runAll(Catalog, catalog, catalog);
 
 		V.before('0.8.0') && _.populateExtensions(catalog, 'catalog') && DONE;
+
+		return catalog;
 	},
 
 	openeo(obj) {
@@ -442,6 +444,8 @@ var Collection = {
 
 		V.before('0.8.0') && _.populateExtensions(collection, 'collection') && DONE;
 		V.before('1.0.0-beta.1') && _.mapValues(collection, 'stac_extensions', ['assets'], ['item-assets']) && DONE;
+
+		return collection;
 	},
 
 	extent(collection) {
@@ -652,7 +656,25 @@ var Item = {
 
 		// Also populate extensions if commons has been implemented
 		(V.before('0.8.0') || commons) && _.populateExtensions(item, 'item') && DONE;
+
+		return item;
 	}
+
+};
+
+var ItemCollection = {
+
+	migrate(itemCollection, updateVersionNumber = true) {
+		_.ensure(itemCollection, 'type', 'FeatureCollection') && DONE;
+		_.ensure(itemCollection, 'features', []) && DONE;
+		_.ensure(itemCollection, 'links', []) && DONE;
+
+		_.runAll(ItemCollection, itemCollection, itemCollection);
+
+		itemCollection.features = itemCollection.features.map(feature => Item.migrate(feature, null, updateVersionNumber));
+
+		return itemCollection;
+	},
 
 };
 
@@ -666,7 +688,10 @@ var Asset = {
 
 	migrate(asset, context) {
 		_.runAll(Asset, asset, context);
+
 		Fields.migrate(asset, context);
+
+		return asset;
 	},
 
 	mediaTypes(asset) {
@@ -699,6 +724,8 @@ var Fields = {
 
 	migrate(obj, context, summaries = false) {
 		_.runAll(Fields, obj, context, summaries);
+
+		return obj;
 	},
 
 	_commonMetadata(obj) {
@@ -892,23 +919,27 @@ var Fields = {
 var Migrate = {
 
 	item(item, collection = null, updateVersionNumber = true) {
-		Item.migrate(item, collection, updateVersionNumber);
-		return item;
+		return Item.migrate(item, collection, updateVersionNumber);
 	},
 	
 	catalog(catalog, updateVersionNumber = true) {
-		Catalog.migrate(catalog, updateVersionNumber);
-		return catalog;
+		return Catalog.migrate(catalog, updateVersionNumber);
 	},
 	
 	collection(collection, updateVersionNumber = true) {
-		Collection.migrate(collection, updateVersionNumber);
-		return collection;
+		return Collection.migrate(collection, updateVersionNumber);
+	},
+
+	itemCollection(itemCollection, updateVersionNumber = true) {
+		return ItemCollection.migrate(itemCollection, updateVersionNumber);
 	},
 	
 	stac(object, updateVersionNumber = true) {
 		if (object.type === 'Feature') {
 			return Migrate.item(object, null, updateVersionNumber);
+		}
+		else if (object.type === 'FeatureCollection') {
+			return Migrate.itemCollection(object, updateVersionNumber);
 		}
 		else if (object.type === 'Collection' || _.isDefined(object.extent) || _.isDefined(object.license)) {
 			return Migrate.collection(object, updateVersionNumber);
