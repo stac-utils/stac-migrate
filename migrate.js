@@ -662,6 +662,21 @@ var Item = {
 
 };
 
+var CollectionCollection = {
+
+	migrate(object, updateVersionNumber = true) {
+		_.ensure(object, 'collections', []) && DONE;
+		_.ensure(object, 'links', []) && DONE;
+
+		_.runAll(CollectionCollection, object, object);
+
+		object.collections = object.collections.map(collection => Collection.migrate(collection, updateVersionNumber));
+
+		return object;
+	},
+
+};
+
 var ItemCollection = {
 
 	migrate(itemCollection, updateVersionNumber = true) {
@@ -930,6 +945,10 @@ var Migrate = {
 		return Collection.migrate(collection, updateVersionNumber);
 	},
 
+	collectionCollection(collections, updateVersionNumber = true) {
+		return CollectionCollection.migrate(collections, updateVersionNumber);
+	},
+
 	itemCollection(itemCollection, updateVersionNumber = true) {
 		return ItemCollection.migrate(itemCollection, updateVersionNumber);
 	},
@@ -941,9 +960,12 @@ var Migrate = {
 		else if (object.type === 'FeatureCollection') {
 			return Migrate.itemCollection(object, updateVersionNumber);
 		}
-		else if (object.type === 'Collection' || _.isDefined(object.extent) || _.isDefined(object.license)) {
+		else if (object.type === 'Collection' || (!object.type && _.isDefined(object.extent) && _.isDefined(object.license))) {
 			return Migrate.collection(object, updateVersionNumber);
 		}
+    else if (!object.type && Array.isArray(object.collections)) {
+			return Migrate.collectionCollection(object, updateVersionNumber);
+    }
 		else {
 			return Migrate.catalog(object, updateVersionNumber);
 		}

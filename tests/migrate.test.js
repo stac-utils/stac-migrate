@@ -35,14 +35,24 @@ describe('STAC Migrations', () => {
     });
 
     test('ItemCollection', () => {
-        const legacy1 = loadJson('legacy/item-minimal.json');
-        const latest1 = loadJson('latest/item-minimal.json');
-        const legacy2 = loadJson('legacy/item-sample.json');
-        const latest2 = loadJson('latest/item-sample.json');
-        const legacy = {type: "FeatureCollection", features: [legacy1, legacy2]};
-        const latest = {type: "FeatureCollection", features: [latest1, latest2], links: []};
+        const items = ['item-minimal', 'item-sample'];
+        const legacyItem = items.map(id => loadJson(`legacy/${id}.json`));
+        const latestItems = items.map(id => loadJson(`latest/${id}.json`));
+        const legacy = {type: "FeatureCollection", features: legacyItem};
+        const latest = {type: "FeatureCollection", features: latestItems, links: []};
 
         expect(Migrate.itemCollection(legacy)).toEqual(latest);
+        expect(Migrate.stac(legacy)).toEqual(latest);
+    });
+
+    test('CollectionCollection', () => {
+        const collections = ['collection-assets', 'collection-openeo-gee', 'collection-other', 'collection-sar-0.6', 'collection-sar-0.9'];
+        const legacyCollections = collections.map(id => loadJson(`legacy/${id}.json`));
+        const latestCollections = collections.map(id => loadJson(`latest/${id}.json`));
+        const legacy = {collections: legacyCollections};
+        const latest = {collections: latestCollections, links: []};
+
+        expect(Migrate.collectionCollection(legacy)).toEqual(latest);
         expect(Migrate.stac(legacy)).toEqual(latest);
     });
 });

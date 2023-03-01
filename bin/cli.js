@@ -18,28 +18,33 @@ const args = yargs(hideBin(process.argv))
   .option('collection', {
     type: 'boolean',
     description: 'Enforce the collection migration',
-    conflicts: ['catalog', 'item', 'item_collection'],
+    conflicts: ['catalog', 'collections', 'item', 'item_collection'],
 
   })
   .option('catalog', {
     type: 'boolean',
     description: 'Enforce the catalog migration',
-    conflicts: ['collection', 'item', 'item_collection']
+    conflicts: ['collection', 'collections', 'item', 'item_collection']
   })
   .option('item', {
     type: 'boolean',
     description: 'Enforce the item migration',
-    conflicts: ['catalog', 'collection', 'item_collection']
+    conflicts: ['catalog', 'collection', 'collections', 'item_collection']
   })
   .option('item_collection', {
     type: 'boolean',
     description: 'Enforce the item collection migration',
-    conflicts: ['catalog', 'collection', 'item']
+    conflicts: ['catalog', 'collection', 'collections', 'item']
+  })
+  .option('collections', {
+    type: 'boolean',
+    description: 'Enforce the collection collection migration',
+    conflicts: ['catalog', 'collection', 'item', 'item_collection']
   })
   .option('collection_path', {
     type: 'string',
     description: 'Pass the path to a collection to the item, only possible if --item has been specified.',
-    conflicts: ['catalog', 'collection', 'item_collection']
+    conflicts: ['catalog', 'collection', 'collections', 'item_collection']
   })
   .option('indent', {
     type: 'number',
@@ -53,9 +58,13 @@ run(args);
 
 function run(args) {
   console.log("STAC Migrate v" + package.version);
-  let fn = ['collection', 'catalog', 'item', 'item_collection'].find(type => Boolean(args[type])) || 'stac';
-  if (fn === 'item_collection') {
-    fn = 'itemCollection';
+  let fn = ['collection', 'collections', 'catalog', 'item', 'item_collection'].find(type => Boolean(args[type])) || 'stac';
+  let fns = {
+    item_collection: 'itemCollection',
+    collections: 'collectionCollection'
+  };
+  if (fns[fn]) {
+    fn = fns[fn];
   }
   if (args._.length !== 1) {
     throw new Error("Please provide exactly one source file.");

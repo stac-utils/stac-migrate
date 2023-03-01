@@ -18,7 +18,8 @@ Import the library: `const Migrate = require('@radiantearth/stac-migrate');`
 * Migrate a STAC Catalog: `Migrate.catalog(catalog: object, updateVersionNumber: boolean = true) => object`
 * Migrate a STAC Item: `Migrate.item(item: object, collection: object = null, updateVersionNumber: boolean = true) => object`<br />
   *The `collection` parameter is only required to migrate the Commons extension. Otherwise, you don't need to pass this paramater.*
-* Migrate a STAC ItemCollection: `Migrate.itemCollection(catalog: object, updateVersionNumber: boolean = true) => object`
+* Migrate a STAC CollectionCollection: `Migrate.collectionCollection(apiCollections: object, updateVersionNumber: boolean = true) => object`
+* Migrate a STAC ItemCollection: `Migrate.itemCollection(apiItems: object, updateVersionNumber: boolean = true) => object`
 
 **Note:** All changes will be applied in-place! If you don't want the input object to change, make a deep clone before. If you don't have a library which supports this (e.g. [lodash](https://lodash.com/docs/4.17.15#cloneDeep)) you can simply use `var clone = JSON.parse(JSON.stringify(object));`.
 
@@ -33,6 +34,7 @@ The commands follow the different methods above and has the same "restrictions" 
 * Migrate a STAC Catalog: `npx stac-migrate <source_path> <dest_path> --catalog`
 * Migrate a STAC Item: `npx stac-migrate <source_path> <dest_path> --item --collection_path <collection_path>`
 * Migrate a STAC Item Collection: `npx stac-migrate <source_path> <dest_path> --item_collection`
+* Migrate a STAC Collection Collection: `npx stac-migrate <source_path> <dest_path> --collecions`
 
 ##  Supported Extensions
 
