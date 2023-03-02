@@ -963,9 +963,9 @@ var Migrate = {
 		else if (object.type === 'Collection' || (!object.type && _.isDefined(object.extent) && _.isDefined(object.license))) {
 			return Migrate.collection(object, updateVersionNumber);
 		}
-    else if (!object.type && Array.isArray(object.collections)) {
+		else if (!object.type && Array.isArray(object.collections)) {
 			return Migrate.collectionCollection(object, updateVersionNumber);
-    }
+		}
 		else {
 			return Migrate.catalog(object, updateVersionNumber);
 		}
