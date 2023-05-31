@@ -556,7 +556,7 @@ var Collection = {
 		_.ensure(collection, 'summaries', {});
 
 		// other_properties: An early version of the Collection summaries with a similar structure
-		// Was mostly used in standalone collctions from openEO and GEE. Move other_properties to summaries.
+		// Was mostly used in standalone collections from openEO and GEE. Move other_properties to summaries.
 		if (V.before('0.8.0') && _.isObject(collection.other_properties)) {
 			for(let key in collection.other_properties) {
 				let prop = collection.other_properties[key];
