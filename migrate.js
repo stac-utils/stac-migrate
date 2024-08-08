@@ -7,7 +7,7 @@ var compareVersions = require('compare-versions');
 const LATEST_VERSION = '1.0.0';
 const DONE = true; // This is used to verify in code coverage whether something has been used or not
 const SCHEMAS = {
-	'classification': 'https://stac-extensions.github.io/classification/v1.1.0/schema.json',
+	'classification': 'https://stac-extensions.github.io/classification/v2.0.0/schema.json',
 	'datacube': 'https://stac-extensions.github.io/datacube/v2.1.0/schema.json',
 	'eo': 'https://stac-extensions.github.io/eo/v1.0.0/schema.json',
 	'file': 'https://stac-extensions.github.io/file/v1.0.0/schema.json',
@@ -29,6 +29,7 @@ const EXTENSIONS = {
 	// Add a : at the end to indicate it has a prefix, otherwise list all fields separately (see version extension for example).
 	itemAndCollection: {
 		// with prefix
+    'classification:': SCHEMAS.classification,
 		'cube:': SCHEMAS.datacube,
 		'eo:': SCHEMAS.eo,
 		'file:': SCHEMAS.file,
@@ -777,6 +778,9 @@ var Fields = {
 	classification(obj, context) {
 		if (V.before('1.1.0', 'classification')) {
 			_.forAll(obj, 'classification:classes', o => _.rename(o, 'color-hint', 'color_hint')) && DONE;
+		}
+		if (V.before('2.0.0', 'classification')) {
+			_.forAll(obj, 'classification:classes', o => _.ensure(o, 'name', o.description)) && DONE;
 		}
 
 		_.upgradeExtension(context, SCHEMAS.classification);

@@ -62,13 +62,12 @@
       "classification:classes": [
         {
           "value": 0,
-          "name": "invalid",
+          "description": "invalid",
           "color-hint": "FFFFFF"
         },
-        
         {
           "value": 1,
-          "name": "valid",
+          "description": "valid",
           "color-hint": "000000"
         }
       ]
