@@ -39,6 +39,7 @@
     "eo:gsd": 0.512,
     "created": "2016-05-02T08:00:00.000+08:00"
   },
+  "collection": "CS3-20160503_132130_04",
   "links": [
     {"rel": "self", "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/CS3-20160503_132130_04.json"},
     {"rel": "root", "href": "http://cool-sat.com/catalog/catalog.json"},

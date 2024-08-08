@@ -4,7 +4,7 @@
   "title":"Example",
   "description":"Example",
   "license":"Apache-2.0",
-  "version": 1,
+  "version": "1.0",
   "deprecated": true,
   "extent":{
     "spatial":{
@@ -22,7 +22,8 @@
   },
   "links":[
     {
-      "href":"https://example.com"
+      "href":"https://example.com",
+      "rel":"about"
     }
   ],
   "other_properties":{

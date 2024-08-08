@@ -5,12 +5,12 @@
     "https://stac-extensions.github.io/view/v1.0.0/schema.json"
   ],
   "type": "Feature",
-  "id": "",
+  "id": "item-minimal",
   "geometry": null,
   "properties": {
     "datetime": "2016-05-03T13:22:30.040Z",
-    "view:azimuth": 22.4,
-    "view:incidence_angle": 122.3,
+    "view:azimuth": 122.4,
+    "view:incidence_angle": 22.3,
     "license": "Apache-2.0"
   },
   "links": [],
