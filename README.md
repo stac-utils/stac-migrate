@@ -1,8 +1,9 @@
 # stac-migrate
 
-A library to update STAC files to the latest version (**1.0.0** at the moment of writing). Supports updating **STAC versions 0.6.0 and later**.
+A library to update STAC files to the latest version (**1.1.0-beta.1** at the moment of writing).
+Supports updating **STAC versions 0.6.0 and later**.
 
-Version of this library: **1.6.0**
+Version of this library: **2.0.0-beta.1**
 
 ## Usage
 
@@ -16,7 +17,8 @@ Import the library: `const Migrate = require('@radiantearth/stac-migrate');`
   *This method does not migrate the Commons extension - use `Migrate.item` if you have used the Commons extension.*
 * Migrate a STAC Collection: `Migrate.collection(collection: object, updateVersionNumber: boolean = true) => object`
 * Migrate a STAC Catalog: `Migrate.catalog(catalog: object, updateVersionNumber: boolean = true) => object`
-* Migrate a STAC Item: `Migrate.item(item: object, collection: object = null, updateVersionNumber: boolean = true) => object`<br />
+* Migrate a STAC Item: `Migrate.item(item: object, collection: object = null, updateVersionNumber: boolean = true) => object`
+  
   *The `collection` parameter is only required to migrate the Commons extension. Otherwise, you don't need to pass this paramater.*
 * Migrate a STAC CollectionCollection: `Migrate.collectionCollection(apiCollections: object, updateVersionNumber: boolean = true) => object`
 * Migrate a STAC ItemCollection: `Migrate.itemCollection(apiItems: object, updateVersionNumber: boolean = true) => object`
@@ -36,22 +38,22 @@ The commands follow the different methods above and has the same "restrictions" 
 * Migrate a STAC Item Collection: `npx stac-migrate <source_path> <dest_path> --item_collection`
 * Migrate a STAC Collection Collection: `npx stac-migrate <source_path> <dest_path> --collecions`
 
-##  Supported Extensions
+## Supported Extensions
 
 * Checksum (legacy, use `Migrate.enableMultihash(require('multihashes'))` to enable conversion from pre-0.9 checksums - disabled by default to keep the bundle size low)
-* Classification 1.1.0
+* Classification 2.0.0
 * Collection Assets (legacy)
 * Commons (legacy)
-* Data Cube 2.1.0
+* Data Cube 2.2.0
 * Datetime Range (legacy)
-* Electro-Optical 1.0.0
+* Electro-Optical 2.0.0-beta.1
 * File 1.0.0
-* (Item) Asset Definition 1.0.0
+* Item Asset Definition 1.0.0 (legacy)
 * Label 1.0.1
 * Point Cloud 1.0.0
 * Procesing 1.1.0
 * Projection 1.0.0
-* Raster 1.1.0
+* Raster 2.0.0-beta.1
 * SAR 1.0.0
 * Satellite 1.0.0
 * Scientific Citation 1.0.0
