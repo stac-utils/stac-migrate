@@ -53,7 +53,7 @@ const EXTENSIONS = {
     // None yet
   },
   collection: {
-    'item_assets': SCHEMAS['item-assets']
+    // None yet
   },
   item: {
     // None yet
@@ -97,14 +97,19 @@ var V = {
   },
 
   before(version, ext = null) {
+    return V.compare('<', version, ext);
+  },
+
+  compare(comparator, version, ext = null) {
     let compareTo = ext ? V.extensions[ext] : V.version;
     if (typeof compareTo === 'undefined') {
       return false;
     }
     else {
-      return compareVersions.compare(compareTo, version, '<');
+      return compareVersions.compare(compareTo, version, comparator);
     }
   }
+
 };
 
 var _ = {
@@ -425,7 +430,7 @@ var Collection = {
 
     V.before('1.0.0-rc.1') && _.migrateExtensionShortnames(collection) && DONE;
 
-    _.ensure(collection, 'license', 'proprietary') && DONE;
+    _.ensure(collection, 'license', 'other') && DONE;
     _.ensure(collection, 'extent', {
       spatial: {
         bbox: []
@@ -549,6 +554,8 @@ var Collection = {
 
   itemAsset(collection) {
     V.before('1.0.0-beta.2') && _.rename(collection, 'item_assets', 'assets');
+
+    _.removeExtension(collection, SCHEMAS['item-assets']) && DONE;
 
     Asset.migrateAll(collection, 'item_assets');
   },

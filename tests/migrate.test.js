@@ -1,6 +1,5 @@
 const Migrate = require('../migrate');
 const fs = require('fs');
-const path = require('path');
 
 Migrate.enableMultihash(require('multihashes'));
 
