@@ -1,0 +1,74 @@
+{
+  "stac_version":"1.1.0-beta.1",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/eo/v2.0.0-beta.1/schema.json",
+    "https://stac-extensions.github.io/raster/v2.0.0-beta.1/schema.json"
+  ],
+  "type": "Collection",
+  "id":"example",
+  "title":"Example",
+  "description":"Example",
+  "license":"Apache-2.0",
+  "extent":{
+    "spatial":{
+      "bbox":[
+        [-50,-90,50,90],
+        [-180,-56,180,83]
+      ]
+    },
+    "temporal":{
+      "interval":[
+        ["1990-01-01T00:00:00Z","2000-01-01T00:00:00Z"],
+        ["2015-06-23T00:00:00Z",null]
+      ]
+    }
+  },
+  "links":[],
+  "summaries":{
+    "bands":[
+      {
+        "name":"B1",
+        "eo:common_name":"coastal",
+        "eo:center_wavelength":4.439,
+        "gsd":60
+      },
+      {
+        "name":"B2",
+        "eo:common_name":"blue",
+        "eo:center_wavelength":4.966,
+        "gsd":10
+      }
+    ]
+  },
+  "assets": {
+    "example": {
+      "href": "https://example.com/image.tif",
+      "type": "image/tiff",
+      "bands":[
+        {
+          "name":"B1",
+          "eo:common_name":"coastal",
+          "eo:center_wavelength":4.439,
+          "gsd":60,
+          "data_type":"uint16",
+          "raster:sampling":"area",
+          "raster:spatial_resolution":60
+        },
+        {
+          "name":"B2",
+          "eo:common_name":"blue",
+          "eo:center_wavelength":4.966,
+          "gsd":10,
+          "data_type":"uint16",
+          "raster:sampling":"area",
+          "raster:spatial_resolution":10
+        },
+        {
+          "name":"SCL",
+          "data_type":"uint8",
+          "raster:spatial_resolution":60
+        }
+      ]
+    }
+  }
+}

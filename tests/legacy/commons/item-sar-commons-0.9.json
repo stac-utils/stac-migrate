@@ -1,21 +1,21 @@
 {
-	"stac_version": "0.9.0",
-	"stac_extensions": [
-		"commons",
-		"view"
-	],
-	"id": "S1A_EW_GRDM_1SSH_20181103T235855_20181103T235955_024430_02AD5D_5616",
-	"type": "Feature",
-	"bbox": [-70.275032,-64.72924,-65.087479,-51.105831],
+  "stac_version": "0.9.0",
+  "stac_extensions": [
+    "commons",
+    "view"
+  ],
+  "id": "S1A_EW_GRDM_1SSH_20181103T235855_20181103T235955_024430_02AD5D_5616",
+  "type": "Feature",
+  "bbox": [-70.275032,-64.72924,-65.087479,-51.105831],
     "geometry": {
-        "coordinates": [[[-70.275032, -64.72924], [-65.087479, -64.72924], [-65.087479, -51.105831], [-70.275032, -51.105831], [-70.275032, -64.72924]]],
-        "type": "Polygon"
+      "coordinates": [[[-70.275032, -64.72924], [-65.087479, -64.72924], [-65.087479, -51.105831], [-70.275032, -51.105831], [-70.275032, -64.72924]]],
+      "type": "Polygon"
     },
-	"properties":{
-        "datetime": "2018-11-03T23:58:55.121559Z",
-		"view:incidence_angle":12.3,
-		"view:off_nadir":32.1
-	},
-	"assets": {},
-	"links": []
+  "properties":{
+    "datetime": "2018-11-03T23:58:55.121559Z",
+    "view:incidence_angle":12.3,
+    "view:off_nadir":32.1
+  },
+  "assets": {},
+  "links": []
 }

@@ -46,7 +46,14 @@ describe('STAC Migrations', () => {
     });
 
     test('CollectionCollection', () => {
-        const collections = ['collection-assets', 'collection-openeo-gee', 'collection-other', 'collection-sar-0.6', 'collection-sar-0.9'];
+        const collections = [
+          'collection-assets',
+          'collection-bands',
+          'collection-openeo-gee',
+          'collection-other',
+          'collection-sar-0.6',
+          'collection-sar-0.9'
+        ];
         const legacyCollections = collections.map(id => loadJson(`legacy/${id}.json`));
         const latestCollections = collections.map(id => loadJson(`latest/${id}.json`));
         const legacy = {collections: legacyCollections};

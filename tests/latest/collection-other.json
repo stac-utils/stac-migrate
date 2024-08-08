@@ -1,58 +1,58 @@
 {
-	"stac_version":"1.0.0",
-	"stac_extensions": [
-		"https://stac-extensions.github.io/eo/v1.0.0/schema.json",
-		"https://stac-extensions.github.io/sat/v1.0.0/schema.json",
-		"https://stac-extensions.github.io/version/v1.0.0/schema.json"
-	],
-	"type":"Collection",
-	"id":"example",
-	"title":"Example",
-	"description":"Example",
-	"license":"Apache-2.0",
-	"version": 1,
-	"deprecated": true,
-	"extent":{
-		"spatial":{
-			"bbox":[
-				[-180,-90,180,90],
-				[-50,-90,50,90],
-				[-180,-56,180,83]
-			]
-		},
-		"temporal":{
-			"interval":[
-				["1990-01-01T00:00:00Z", null],
-				["1990-01-01T00:00:00Z","2000-01-01T00:00:00Z"],
-				["2015-06-23T00:00:00Z",null]
-			]
-		}
-	},
-	"links":[
-		{
-			"href":"https://example.com"
-		}
-	],
-	"summaries":{
-		"sat:orbit_state":[
-			"ascending",
-			"descending",
-			"geostationary"
-		],
-		"eo:bands":[
-			{
-				"name":"B1",
-				"common_name":"coastal",
-				"center_wavelength":4.439,
-				"gsd":60
-			},
-			{
-				"name":"B2",
-				"common_name":"blue",
-				"center_wavelength":4.966,
-				"gsd":10
-			}
-		],
-		"openeo:array":[1,2,3,4,5,6]
-	}
+  "stac_version":"1.1.0-beta.1",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/eo/v2.0.0-beta.1/schema.json",
+    "https://stac-extensions.github.io/sat/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/version/v1.0.0/schema.json"
+  ],
+  "type":"Collection",
+  "id":"example",
+  "title":"Example",
+  "description":"Example",
+  "license":"Apache-2.0",
+  "version": 1,
+  "deprecated": true,
+  "extent":{
+    "spatial":{
+      "bbox":[
+        [-180,-90,180,90],
+        [-50,-90,50,90],
+        [-180,-56,180,83]
+      ]
+    },
+    "temporal":{
+      "interval":[
+        ["1990-01-01T00:00:00Z", null],
+        ["1990-01-01T00:00:00Z","2000-01-01T00:00:00Z"],
+        ["2015-06-23T00:00:00Z",null]
+      ]
+    }
+  },
+  "links":[
+    {
+      "href":"https://example.com"
+    }
+  ],
+  "summaries":{
+    "sat:orbit_state":[
+      "ascending",
+      "descending",
+      "geostationary"
+    ],
+    "bands":[
+      {
+        "name":"B1",
+        "eo:common_name":"coastal",
+        "eo:center_wavelength":4.439,
+        "gsd":60
+      },
+      {
+        "name":"B2",
+        "eo:common_name":"blue",
+        "eo:center_wavelength":4.966,
+        "gsd":10
+      }
+    ],
+    "openeo:array":[1,2,3,4,5,6]
+  }
 }

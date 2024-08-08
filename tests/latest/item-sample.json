@@ -1,9 +1,9 @@
 {
-  "stac_version": "1.0.0",
+  "stac_version": "1.1.0-beta.1",
   "stac_extensions": [
-		"https://stac-extensions.github.io/classification/v2.0.0/schema.json",
-    "https://stac-extensions.github.io/eo/v1.0.0/schema.json",
-		"https://stac-extensions.github.io/file/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/classification/v2.0.0/schema.json",
+    "https://stac-extensions.github.io/eo/v2.0.0-beta.1/schema.json",
+    "https://stac-extensions.github.io/file/v1.0.0/schema.json",
     "https://stac-extensions.github.io/view/v1.0.0/schema.json"
   ],
   "type": "Feature",
@@ -23,16 +23,16 @@
   },
   "properties": {
     "datetime": "2016-05-03T13:22:30.040Z",
-    "eo:bands": [
-        {
-          "name": "B1"
-        },
-        {
-          "name": "B2"
-        },
-        {
-          "name": "B3"
-        }
+    "bands": [
+      {
+        "name": "B1"
+      },
+      {
+        "name": "B2"
+      },
+      {
+        "name": "B3"
+      }
     ],
     "view:sun_azimuth": 168.7,
     "eo:cloud_cover": 0.12,
@@ -53,7 +53,7 @@
     "b1": {
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/b1.tif",
       "type": "image/tiff; application=geotiff",
-      "eo:bands": [{
+      "bands": [{
         "name": "B1"
       }],
       "file:checksum": "1114a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
@@ -61,7 +61,7 @@
     "b2+3": {
       "href": "http://cool-sat.com/catalog/CS3-20160503_132130_04/b1.tif",
       "type": "image/tiff; application=geotiff; profile=cloud-optimized",
-      "eo:bands": [
+      "bands": [
         {
           "name": "B2"
         },

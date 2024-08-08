@@ -1,7 +1,7 @@
 {
   "type": "Feature",
   "stac_extensions": [
-		"https://stac-extensions.github.io/classification/v1.0.0/schema.json"
+    "https://stac-extensions.github.io/classification/v1.0.0/schema.json"
   ],
   "id" : "CS3-20160503_132131_05",
   "bbox": [-122.59750209, 37.48803556, -122.2880486, 37.613537207],
@@ -20,15 +20,15 @@
   "properties": {
     "datetime": "2016-05-03T13:22:30.040Z",
     "eo:bands": [
-        {
-          "name": "B1"
-        },
-        {
-          "name": "B2"
-        },
-        {
-          "name": "B3"
-        }
+      {
+        "name": "B1"
+      },
+      {
+        "name": "B2"
+      },
+      {
+        "name": "B3"
+      }
     ],
     "eo:sun_azimuth": 168.7,
     "eo:cloud_cover": 0.12,

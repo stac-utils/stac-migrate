@@ -1,13 +1,13 @@
 {
-    "stac_version": "1.0.0",
-    "id": "example",
-    "title": "Example",
-    "description": "Example",
-    "links": [
-        {
-            "href": "https://example.com"
-        }
-    ],
-    "type": "Catalog",
-    "stac_extensions": []
+  "stac_version": "1.0.0",
+  "id": "example",
+  "title": "Example",
+  "description": "Example",
+  "links": [
+    {
+      "href": "https://example.com"
+    }
+  ],
+  "type": "Catalog",
+  "stac_extensions": []
 }
