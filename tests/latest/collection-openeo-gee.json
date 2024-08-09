@@ -3,7 +3,7 @@
   "stac_extensions": [
     "https://stac-extensions.github.io/datacube/v2.2.0/schema.json",
     "https://stac-extensions.github.io/eo/v2.0.0-beta.1/schema.json",
-    "https://stac-extensions.github.io/projection/v1.0.0/schema.json",
+    "https://stac-extensions.github.io/projection/v2.0.0/schema.json",
     "https://stac-extensions.github.io/scientific/v1.0.0/schema.json"
   ],
   "type":"Collection",
@@ -123,7 +123,9 @@
   },
   "sci:citation":"Copernicus Sentinel data [Year]",
   "summaries":{
-    "proj:epsg":[32632],
+    "proj:code":[
+      "EPSG:32632"
+    ],
     "constellation":["Sentinel-2"],
     "instruments":["MSI"],
     "bands":[

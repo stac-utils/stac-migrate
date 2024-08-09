@@ -2,7 +2,8 @@
   "stac_version":"1.1.0-beta.1",
   "stac_extensions": [
     "https://stac-extensions.github.io/eo/v2.0.0-beta.1/schema.json",
-    "https://stac-extensions.github.io/raster/v2.0.0-beta.1/schema.json"
+    "https://stac-extensions.github.io/raster/v2.0.0-beta.1/schema.json",
+    "https://stac-extensions.github.io/projection/v2.0.0/schema.json"
   ],
   "type": "Collection",
   "id":"example",
@@ -42,6 +43,7 @@
     "example": {
       "href": "https://example.com/image.tif",
       "type": "image/tiff",
+      "proj:code": "EPSG:4326",
       "bands":[
         {
           "name":"B1",

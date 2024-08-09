@@ -47,20 +47,20 @@ The commands follow the different methods above and has the same "restrictions" 
 * Data Cube 2.2.0
 * Datetime Range (legacy)
 * Electro-Optical 2.0.0-beta.1
-* File 1.0.0
+* File 2.1.0 (and 1.0.0 for `nodata`)
 * Item Asset Definition 1.0.0 (legacy)
 * Label 1.0.1
 * Point Cloud 1.0.0
-* Procesing 1.1.0
-* Projection 1.0.0
+* Processing 1.2.0
+* Projection 2.0.0
 * Raster 2.0.0-beta.1
 * SAR 1.0.0
 * Satellite 1.0.0
 * Scientific Citation 1.0.0
 * Single Item
 * Table 1.2.0
-* Timestamps 1.0.0
-* Versioning Indicators 1.0.0
+* Timestamps 1.1.0
+* Versioning Indicators 1.2.0
 * View Geometry 1.0.0
 
 ## Development

@@ -10,19 +10,19 @@ const SCHEMAS = {
   'classification': 'https://stac-extensions.github.io/classification/v2.0.0/schema.json',
   'datacube': 'https://stac-extensions.github.io/datacube/v2.2.0/schema.json',
   'eo': 'https://stac-extensions.github.io/eo/v2.0.0-beta.1/schema.json',
-  'file': 'https://stac-extensions.github.io/file/v1.0.0/schema.json',
+  'file': 'https://stac-extensions.github.io/file/v2.1.0/schema.json',
   'item-assets': 'https://stac-extensions.github.io/item-assets/v1.0.0/schema.json',
   'label': 'https://stac-extensions.github.io/label/v1.0.1/schema.json',
   'pointcloud': 'https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json',
-  'processing': 'https://stac-extensions.github.io/processing/v1.1.0/schema.json',
-  'projection': 'https://stac-extensions.github.io/projection/v1.0.0/schema.json',
+  'processing': 'https://stac-extensions.github.io/processing/v1.2.0/schema.json',
+  'projection': 'https://stac-extensions.github.io/projection/v2.0.0/schema.json',
   'raster': 'https://stac-extensions.github.io/raster/v2.0.0-beta.1/schema.json',
   'sar': 'https://stac-extensions.github.io/sar/v1.0.0/schema.json',
   'sat': 'https://stac-extensions.github.io/sat/v1.0.0/schema.json',
   'scientific': 'https://stac-extensions.github.io/scientific/v1.0.0/schema.json',
   'table': 'https://stac-extensions.github.io/table/v1.2.0/schema.json',
-  'timestamps': 'https://stac-extensions.github.io/timestamps/v1.0.0/schema.json',
-  'version': 'https://stac-extensions.github.io/version/v1.0.0/schema.json',
+  'timestamps': 'https://stac-extensions.github.io/timestamps/v1.1.0/schema.json',
+  'version': 'https://stac-extensions.github.io/version/v1.2.0/schema.json',
   'view': 'https://stac-extensions.github.io/view/v1.0.0/schema.json'
 };
 const EXTENSIONS = {
@@ -128,7 +128,12 @@ var _ = {
   },
 
   is(val, type) {
-    return (_.type(val) === type);
+    if (Array.isArray(type)) {
+      return type.includes(_.type(val));
+    }
+    else {
+      return _.type(val) === type;
+    }
   },
 
   isDefined(val) {
@@ -143,6 +148,14 @@ var _ = {
     if (typeof obj[oldKey] !== 'undefined' && typeof obj[newKey] === 'undefined') {
       obj[newKey] = obj[oldKey];
       delete obj[oldKey];
+      return true;
+    }
+    return false;
+  },
+
+  copy(obj, oldKey, newKey) {
+    if (typeof obj[oldKey] !== 'undefined' && typeof obj[newKey] === 'undefined') {
+      obj[newKey] = obj[oldKey];
       return true;
     }
     return false;
@@ -200,6 +213,17 @@ var _ = {
       return true;
     }
     return false;
+  },
+
+  pickFirst(obj, key) {
+    if (Array.isArray(obj[key]) && obj[key].length > 0) {
+      obj[key] = obj[key][0];
+      return true;
+    }
+    else {
+      delete obj[key];
+      return false;
+    }
   },
 
   ensure(obj, key, defaultValue) {
@@ -347,7 +371,7 @@ var _ = {
   },
 
   toUTC(obj, key) {
-    if (typeof obj[key] === 'string') {
+    if (_.is(obj[key], 'string')) {
       try {
         obj[key] = this.toISOString(obj[key]);
         return true;
@@ -361,7 +385,22 @@ var _ = {
     if (!(date instanceof Date)) {
       date = new Date(date);
     }
-    return date.toISOString().replace('.000', ''); // Don't export milliseconds if not needed
+    return date.toISOString().replace(/\.0+/, ''); // Don't export milliseconds if not needed
+  },
+
+  formatString(obj, key, format) {
+    const formatter = value => {
+      if (_.is(value, ['string', 'number'])) {
+        return format.replaceAll('{}', value);
+      }
+      return value;
+    };
+    if (Array.isArray(obj[key])) {
+      obj[key] = obj[key].map(formatter);
+    }
+    else {
+      obj[key] = formatter(obj[key]);
+    }
   }
 
 };
@@ -888,9 +927,17 @@ var Fields = {
     _.upgradeExtension(context, SCHEMAS.eo);
   },
 
-  file(obj, context) {
-    // TODO: Migrate to v2.1.0 - https://github.com/stac-utils/stac-migrate/issues/7
+  file(obj, context, summaries) {
+    _.rename(obj, 'file:bits_per_sample', 'raster:bits_per_sample') && _.addExtension(context, SCHEMAS.raster) && DONE;
+    _.rename(obj, 'file:data_type', 'data_type') && _.addExtension(context, SCHEMAS.raster) && DONE;
+    _.rename(obj, 'file:unit', 'unit') && _.addExtension(context, SCHEMAS.raster) && DONE;
 
+    if (Array.isArray(obj['file:nodata']) && obj['file:nodata'].length > 1) {
+      // In case of more than one no-data value we need to create a custom property
+      // as there's no alternative for multiple no-data values yet
+      _.copy(obj, 'file:nodata', 'nodata:values') && DONE;
+    }
+    _.rename(obj, 'file:nodata', 'nodata') && !summaries && _.pickFirst(obj, 'nodata') && DONE;
     _.upgradeExtension(context, SCHEMAS.file);
   },
 
@@ -920,7 +967,7 @@ var Fields = {
   },
 
   proj(obj, context) {
-    // Nothing to do
+    _.rename(obj, 'proj:epsg', 'proj:code') && _.formatString(obj, 'proj:code', 'EPSG:{}') && DONE;
 
     _.upgradeExtension(context, SCHEMAS.projection);
   },
