@@ -4,19 +4,19 @@
 
 var compareVersions = require('compare-versions');
 
-const LATEST_VERSION = '1.1.0-beta.1';
+const LATEST_VERSION = '1.1.0';
 const DONE = true; // This is used to verify in code coverage whether something has been used or not
 const SCHEMAS = {
   'classification': 'https://stac-extensions.github.io/classification/v2.0.0/schema.json',
   'datacube': 'https://stac-extensions.github.io/datacube/v2.2.0/schema.json',
-  'eo': 'https://stac-extensions.github.io/eo/v2.0.0-beta.1/schema.json',
+  'eo': 'https://stac-extensions.github.io/eo/v2.0.0/schema.json',
   'file': 'https://stac-extensions.github.io/file/v2.1.0/schema.json',
   'item-assets': 'https://stac-extensions.github.io/item-assets/v1.0.0/schema.json',
   'label': 'https://stac-extensions.github.io/label/v1.0.1/schema.json',
   'pointcloud': 'https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json',
   'processing': 'https://stac-extensions.github.io/processing/v1.2.0/schema.json',
   'projection': 'https://stac-extensions.github.io/projection/v2.0.0/schema.json',
-  'raster': 'https://stac-extensions.github.io/raster/v2.0.0-beta.1/schema.json',
+  'raster': 'https://stac-extensions.github.io/raster/v2.0.0/schema.json',
   'sar': 'https://stac-extensions.github.io/sar/v1.0.0/schema.json',
   'sat': 'https://stac-extensions.github.io/sat/v1.0.0/schema.json',
   'scientific': 'https://stac-extensions.github.io/scientific/v1.0.0/schema.json',
