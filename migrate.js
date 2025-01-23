@@ -63,12 +63,28 @@ EXTENSIONS.collection = Object.assign(EXTENSIONS.collection, EXTENSIONS.itemAndC
 EXTENSIONS.item = Object.assign(EXTENSIONS.item, EXTENSIONS.itemAndCollection);
 
 var Ext = {
-  parseUrl(url) {
+  parseExtension(url) {
+    // Try to match name and version from official extensions
     let match = url.match(/^https?:\/\/stac-extensions.github.io\/([^\/]+)\/v([^\/]+)\/[^.]+.json$/i);
     if (match) {
       return {
         id: match[1],
         version: match[2]
+      };
+    }
+    // Try to match version from URIs
+    let match2 = url.match(/(\d+\.\d+(\.\d+)([a-z_.-][\w.-]+)?)/i);
+    if (match2) {
+      return {
+        id: url,
+        version: match2[1]
+      };
+    }
+    // Handle schortnames
+    if (url in SCHEMAS) {
+      return {
+        id: url,
+        version: '0.0.0'
       };
     }
   }
@@ -88,7 +104,7 @@ var V = {
 
     if (Array.isArray(stac.stac_extensions)) {
       for (let ext of stac.stac_extensions) {
-        let e = Ext.parseUrl(ext);
+        let e = Ext.parseExtension(ext);
         if (e) {
           V.extensions[e.id] = e.version;
         }
@@ -234,9 +250,9 @@ var _ = {
   },
 
   upgradeExtension(context, extension) {
-    let { id, version } = Ext.parseUrl(extension);
+    let { id, version } = Ext.parseExtension(extension);
     let index = context.stac_extensions.findIndex(url => {
-      let old = Ext.parseUrl(url);
+      let old = Ext.parseExtension(url);
       return (old && old.id === id && compareVersions.compare(old.version, version, '<'));
     });
     if (index !== -1) {
@@ -249,12 +265,12 @@ var _ = {
   },
 
   addExtension(context, newExtension) {
-    let { id, version } = Ext.parseUrl(newExtension);
+    let { id, version } = Ext.parseExtension(newExtension);
     let index = context.stac_extensions.findIndex(url => {
       if (url === newExtension) {
         return true;
       }
-      let old = Ext.parseUrl(url);
+      let old = Ext.parseExtension(url);
       if (old && old.id === id && compareVersions.compare(old.version, version, '<')) {
         return true;
       }
