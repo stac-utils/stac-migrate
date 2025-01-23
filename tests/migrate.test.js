@@ -1,64 +1,81 @@
-const Migrate = require('../migrate');
-const fs = require('fs');
+const Migrate = require("../migrate");
+const fs = require("fs");
 
-Migrate.enableMultihash(require('multihashes'));
+Migrate.enableMultihash(require("multihashes"));
 
 function loadJson(path) {
-    return JSON.parse(fs.readFileSync('./tests/' + path));
+  return JSON.parse(fs.readFileSync("./tests/" + path));
 }
 
-describe('STAC Migrations', () => {
-    const files = fs.readdirSync('tests/legacy/');
-    for(let file of files) {
-        if (!file.includes('.')) {
-            continue; // Ignore directories
-        }
-        const legacy = loadJson('legacy/' + file);
-        const latest = loadJson('latest/' + file);
-        test(file, () => {
-            expect(Migrate.stac(legacy)).toEqual(latest);
-        });
+describe("STAC Migrations", () => {
+  const files = fs.readdirSync("tests/legacy/");
+  for (let file of files) {
+    if (!file.includes(".")) {
+      continue; // Ignore directories
     }
-
-    const latestItem = loadJson('latest/commons/item-sar-commons.json');
-    test('Commons Extension from 0.6', () => {
-        const legacyItem = loadJson('legacy/commons/item-sar-commons-0.6.json');
-        const legacyCollection06 = loadJson('legacy/collection-sar-0.6.json');
-        expect(Migrate.item(legacyItem, legacyCollection06)).toEqual(latestItem);
+    const latest = loadJson("latest/" + file);
+    test(`${file} - update version number`, () => {
+      const legacy = loadJson("legacy/" + file);
+      expect(Migrate.stac(legacy, true)).toEqual(latest);
     });
-
-    test('Commons Extension from 0.9', () => {
-        const legacyItem = loadJson('legacy/commons/item-sar-commons-0.9.json');
-        const legacyCollection09 = loadJson('legacy/collection-sar-0.9.json');
-        expect(Migrate.item(legacyItem, legacyCollection09)).toEqual(latestItem);
+    test(`${file} - keep version number`, () => {
+      const legacy = loadJson("legacy/" + file);
+      latest.stac_version = legacy.stac_version;
+      expect(Migrate.stac(legacy, false)).toEqual(latest);
     });
+  }
 
-    test('ItemCollection', () => {
-        const items = ['item-minimal', 'item-sample'];
-        const legacyItem = items.map(id => loadJson(`legacy/${id}.json`));
-        const latestItems = items.map(id => loadJson(`latest/${id}.json`));
-        const legacy = {type: "FeatureCollection", features: legacyItem};
-        const latest = {type: "FeatureCollection", features: latestItems, links: []};
+  const latestItem = loadJson("latest/commons/item-sar-commons.json");
+  test("Commons Extension from 0.6", () => {
+    const legacyItem = loadJson("legacy/commons/item-sar-commons-0.6.json");
+    const legacyCollection06 = loadJson("legacy/collection-sar-0.6.json");
+    expect(Migrate.item(legacyItem, legacyCollection06)).toEqual(latestItem);
+  });
 
-        expect(Migrate.itemCollection(legacy)).toEqual(latest);
-        expect(Migrate.stac(legacy)).toEqual(latest);
-    });
+  test("Commons Extension from 0.9", () => {
+    const legacyItem = loadJson("legacy/commons/item-sar-commons-0.9.json");
+    const legacyCollection09 = loadJson("legacy/collection-sar-0.9.json");
+    expect(Migrate.item(legacyItem, legacyCollection09)).toEqual(latestItem);
+  });
 
-    test('CollectionCollection', () => {
-        const collections = [
-          'collection-assets',
-          'collection-bands',
-          'collection-openeo-gee',
-          'collection-other',
-          'collection-sar-0.6',
-          'collection-sar-0.9'
-        ];
-        const legacyCollections = collections.map(id => loadJson(`legacy/${id}.json`));
-        const latestCollections = collections.map(id => loadJson(`latest/${id}.json`));
-        const legacy = {collections: legacyCollections};
-        const latest = {collections: latestCollections, links: []};
+  test("ItemCollection", () => {
+    const items = ["item-minimal", "item-sample"];
+    const getLegacy = () => {
+      const legacyItem = items.map((id) => loadJson(`legacy/${id}.json`));
+      return { type: "FeatureCollection", features: legacyItem };
+    };
+    const latestItems = items.map((id) => loadJson(`latest/${id}.json`));
+    const latest = {
+      type: "FeatureCollection",
+      features: latestItems,
+      links: [],
+    };
 
-        expect(Migrate.collectionCollection(legacy)).toEqual(latest);
-        expect(Migrate.stac(legacy)).toEqual(latest);
-    });
+    expect(Migrate.itemCollection(getLegacy())).toEqual(latest);
+    expect(Migrate.stac(getLegacy())).toEqual(latest);
+  });
+
+  test("CollectionCollection", () => {
+    const collections = [
+      "collection-assets",
+      "collection-bands",
+      "collection-openeo-gee",
+      "collection-other",
+      "collection-sar-0.6",
+      "collection-sar-0.9",
+    ];
+    const getLegacy = () => {
+      const legacyCollections = collections.map((id) =>
+        loadJson(`legacy/${id}.json`)
+      );
+      return { collections: legacyCollections };
+    };
+    const latestCollections = collections.map((id) =>
+      loadJson(`latest/${id}.json`)
+    );
+    const latest = { collections: latestCollections, links: [] };
+
+    expect(Migrate.collectionCollection(getLegacy())).toEqual(latest);
+    expect(Migrate.stac(getLegacy())).toEqual(latest);
+  });
 });
