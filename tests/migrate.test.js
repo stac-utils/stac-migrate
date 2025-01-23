@@ -16,12 +16,16 @@ describe("STAC Migrations", () => {
     const latest = loadJson("latest/" + file);
     test(`${file} - update version number`, () => {
       const legacy = loadJson("legacy/" + file);
-      expect(Migrate.stac(legacy, true)).toEqual(latest);
+      const migrated = Migrate.stac(legacy, true);
+      expect(migrated.stac_version).toEqual(latest.stac_version);
+      expect(migrated).toEqual(latest);
     });
     test(`${file} - keep version number`, () => {
       const legacy = loadJson("legacy/" + file);
       latest.stac_version = legacy.stac_version;
-      expect(Migrate.stac(legacy, false)).toEqual(latest);
+      const migrated = Migrate.stac(legacy, false);
+      expect(migrated.stac_version).toEqual(legacy.stac_version);
+      expect(migrated).toEqual(latest);
     });
   }
 
