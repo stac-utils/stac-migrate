@@ -929,8 +929,8 @@ var Fields = {
 
   file(obj, context, summaries) {
     _.rename(obj, 'file:bits_per_sample', 'raster:bits_per_sample') && _.addExtension(context, SCHEMAS.raster) && DONE;
-    _.rename(obj, 'file:data_type', 'data_type') && _.addExtension(context, SCHEMAS.raster) && DONE;
-    _.rename(obj, 'file:unit', 'unit') && _.addExtension(context, SCHEMAS.raster) && DONE;
+    _.rename(obj, 'file:data_type', 'data_type') && DONE;
+    _.rename(obj, 'file:unit', 'unit') && DONE;
 
     if (Array.isArray(obj['file:nodata']) && obj['file:nodata'].length > 1) {
       // In case of more than one no-data value we need to create a custom property
