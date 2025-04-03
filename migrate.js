@@ -401,7 +401,7 @@ var _ = {
     if (!(date instanceof Date)) {
       date = new Date(date);
     }
-    return date.toISOString().replace(/\.0+/, ''); // Don't export milliseconds if not needed
+    return date.toISOString().replace(/\.0+(?=[-\+Z])/, ''); // Don't export milliseconds if not needed
   },
 
   formatString(obj, key, format) {
