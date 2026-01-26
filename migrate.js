@@ -423,17 +423,29 @@ var _ = {
 
 var Checksum = {
 
-  multihash: null,
+  multihash: false,
 
-  hexToUint8(hexString) {
-    if (hexString.length === 0 || hexString.length % 2 !== 0) {
-      throw new Error(`The string "${hexString}" is not valid hex.`)
+  // Multihashes are hash digests which contain a prefix with the hash function
+  // used and its length. They are encoded as varints, but in all cases below,
+  // the varints are the same bits as the original values as all are < 128.
+  encodeMultihash(digest, algo) {
+    // Directly use hex strings as the input is already a hex string.
+    // The values used here are from the multicodec code table at
+    // https://github.com/multiformats/multicodec/
+    const codes = {
+      'md5': '0d',
+      'sha1': '11',
+      'sha2-256': '12',
+      'sha3-256': '16'
+    };
+    if (!algo in codes) {
+      throw new Error('Unsupported hash function');
     }
-    return new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-  },
-
-  uint8ToHex(bytes) {
-    return bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+    const code = codes[algo];
+    // The input digest is a hex string, hence is the byte length half the
+    // length of the string.
+    const length = (digest.length / 2).toString(16).padStart(2, '0');
+    return code + length + digest;
   },
 
   toMultihash(obj, key, algo) {
@@ -441,8 +453,7 @@ var Checksum = {
       return false;
     }
     try {
-      const encoded = Checksum.multihash.encode(Checksum.hexToUint8(obj[key]), algo);
-      obj[key] = Checksum.uint8ToHex(encoded);
+      obj[key] = Checksum.encodeMultihash(obj[key], algo)
       return true;
     } catch (error) {
       console.warn(error);
@@ -1097,8 +1108,8 @@ var Migrate = {
     }
   },
 
-  enableMultihash(multihash) {
-    Checksum.multihash = multihash;
+  enableMultihash() {
+    Checksum.multihash = true;
   }
 
 };

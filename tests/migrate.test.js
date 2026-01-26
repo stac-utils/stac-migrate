@@ -1,7 +1,7 @@
 const Migrate = require("../migrate");
 const fs = require("fs");
 
-Migrate.enableMultihash(require("multihashes"));
+Migrate.enableMultihash();
 
 function loadJson(path) {
   return JSON.parse(fs.readFileSync("./tests/" + path));
