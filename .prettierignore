@@ -1,0 +1,3 @@
+dist
+tests/legacy/**/*.json
+tests/latest/**/*.json

@@ -7,23 +7,23 @@ var compareVersions = require('compare-versions');
 const LATEST_VERSION = '1.1.0';
 const DONE = true; // This is used to verify in code coverage whether something has been used or not
 const SCHEMAS = {
-  'classification': 'https://stac-extensions.github.io/classification/v2.0.0/schema.json',
-  'datacube': 'https://stac-extensions.github.io/datacube/v2.2.0/schema.json',
-  'eo': 'https://stac-extensions.github.io/eo/v2.0.0/schema.json',
-  'file': 'https://stac-extensions.github.io/file/v2.1.0/schema.json',
+  classification: 'https://stac-extensions.github.io/classification/v2.0.0/schema.json',
+  datacube: 'https://stac-extensions.github.io/datacube/v2.2.0/schema.json',
+  eo: 'https://stac-extensions.github.io/eo/v2.0.0/schema.json',
+  file: 'https://stac-extensions.github.io/file/v2.1.0/schema.json',
   'item-assets': 'https://stac-extensions.github.io/item-assets/v1.0.0/schema.json',
-  'label': 'https://stac-extensions.github.io/label/v1.0.1/schema.json',
-  'pointcloud': 'https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json',
-  'processing': 'https://stac-extensions.github.io/processing/v1.2.0/schema.json',
-  'projection': 'https://stac-extensions.github.io/projection/v2.0.0/schema.json',
-  'raster': 'https://stac-extensions.github.io/raster/v2.0.0/schema.json',
-  'sar': 'https://stac-extensions.github.io/sar/v1.0.0/schema.json',
-  'sat': 'https://stac-extensions.github.io/sat/v1.0.0/schema.json',
-  'scientific': 'https://stac-extensions.github.io/scientific/v1.0.0/schema.json',
-  'table': 'https://stac-extensions.github.io/table/v1.2.0/schema.json',
-  'timestamps': 'https://stac-extensions.github.io/timestamps/v1.1.0/schema.json',
-  'version': 'https://stac-extensions.github.io/version/v1.2.0/schema.json',
-  'view': 'https://stac-extensions.github.io/view/v1.0.0/schema.json'
+  label: 'https://stac-extensions.github.io/label/v1.0.1/schema.json',
+  pointcloud: 'https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json',
+  processing: 'https://stac-extensions.github.io/processing/v1.2.0/schema.json',
+  projection: 'https://stac-extensions.github.io/projection/v2.0.0/schema.json',
+  raster: 'https://stac-extensions.github.io/raster/v2.0.0/schema.json',
+  sar: 'https://stac-extensions.github.io/sar/v1.0.0/schema.json',
+  sat: 'https://stac-extensions.github.io/sat/v1.0.0/schema.json',
+  scientific: 'https://stac-extensions.github.io/scientific/v1.0.0/schema.json',
+  table: 'https://stac-extensions.github.io/table/v1.2.0/schema.json',
+  timestamps: 'https://stac-extensions.github.io/timestamps/v1.1.0/schema.json',
+  version: 'https://stac-extensions.github.io/version/v1.2.0/schema.json',
+  view: 'https://stac-extensions.github.io/view/v1.0.0/schema.json',
 };
 const EXTENSIONS = {
   // Add a : at the end to indicate it has a prefix, otherwise list all fields separately (see version extension for example).
@@ -43,11 +43,11 @@ const EXTENSIONS = {
     'sci:': SCHEMAS.scientific,
     'view:': SCHEMAS.view,
     // without prefix
-    'version': SCHEMAS.version,
-    'deprecated': SCHEMAS.version,
-    'published': SCHEMAS.timestamps,
-    'expires': SCHEMAS.timestamps,
-    'unpublished': SCHEMAS.timestamps
+    version: SCHEMAS.version,
+    deprecated: SCHEMAS.version,
+    published: SCHEMAS.timestamps,
+    expires: SCHEMAS.timestamps,
+    unpublished: SCHEMAS.timestamps,
   },
   catalog: {
     // None yet
@@ -65,11 +65,11 @@ EXTENSIONS.item = Object.assign(EXTENSIONS.item, EXTENSIONS.itemAndCollection);
 var Ext = {
   parseExtension(url) {
     // Try to match name and version from official extensions
-    let match = url.match(/^https?:\/\/stac-extensions.github.io\/([^\/]+)\/v([^\/]+)\/[^.]+.json$/i);
+    let match = url.match(/^https?:\/\/stac-extensions.github.io\/([^/]+)\/v([^/]+)\/[^.]+.json$/i);
     if (match) {
       return {
         id: match[1],
-        version: match[2]
+        version: match[2],
       };
     }
     // Try to match version from URIs
@@ -77,17 +77,17 @@ var Ext = {
     if (match2) {
       return {
         id: url,
-        version: match2[1]
+        version: match2[1],
       };
     }
     // Handle schortnames
     if (url in SCHEMAS) {
       return {
         id: url,
-        version: '0.0.0'
+        version: '0.0.0',
       };
     }
-  }
+  },
 };
 
 var V = {
@@ -97,8 +97,7 @@ var V = {
   set(stac) {
     if (typeof stac.stac_version !== 'string') {
       V.version = '0.6.0'; // Assume the worst case, it doesn't seem there's a clear indicator for 0.7.0
-    }
-    else {
+    } else {
       V.version = stac.stac_version;
     }
 
@@ -120,23 +119,19 @@ var V = {
     let compareTo = ext ? V.extensions[ext] : V.version;
     if (typeof compareTo === 'undefined') {
       return false;
-    }
-    else {
+    } else {
       return compareVersions.compare(compareTo, version, comparator);
     }
-  }
-
+  },
 };
 
 var _ = {
-
   type(val) {
     let type = typeof val;
     if (type === 'object') {
       if (val === null) {
         return 'null';
-      }
-      else if (Array.isArray(val)) {
+      } else if (Array.isArray(val)) {
         return 'array';
       }
     }
@@ -146,18 +141,17 @@ var _ = {
   is(val, type) {
     if (Array.isArray(type)) {
       return type.includes(_.type(val));
-    }
-    else {
+    } else {
       return _.type(val) === type;
     }
   },
 
   isDefined(val) {
-    return (typeof val !== 'undefined');
+    return typeof val !== 'undefined';
   },
 
   isObject(obj) {
-    return (typeof obj === 'object' && obj === Object(obj) && !Array.isArray(obj));
+    return typeof obj === 'object' && obj === Object(obj) && !Array.isArray(obj);
   },
 
   rename(obj, oldKey, newKey) {
@@ -212,8 +206,7 @@ var _ = {
       if (obj[key].length === 1) {
         obj[key] = obj[key][0];
         return true;
-      }
-      else {
+      } else {
         return false; // It's still an array and we don't know which element to choose
       }
     }
@@ -235,8 +228,7 @@ var _ = {
     if (Array.isArray(obj[key]) && obj[key].length > 0) {
       obj[key] = obj[key][0];
       return true;
-    }
-    else {
+    } else {
       delete obj[key];
       return false;
     }
@@ -251,22 +243,21 @@ var _ = {
 
   upgradeExtension(context, extension) {
     let { id, version } = Ext.parseExtension(extension);
-    let index = context.stac_extensions.findIndex(url => {
+    let index = context.stac_extensions.findIndex((url) => {
       let old = Ext.parseExtension(url);
-      return (old && old.id === id && compareVersions.compare(old.version, version, '<'));
+      return old && old.id === id && compareVersions.compare(old.version, version, '<');
     });
     if (index !== -1) {
       context.stac_extensions[index] = extension;
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   },
 
   addExtension(context, newExtension) {
     let { id, version } = Ext.parseExtension(newExtension);
-    let index = context.stac_extensions.findIndex(url => {
+    let index = context.stac_extensions.findIndex((url) => {
       if (url === newExtension) {
         return true;
       }
@@ -278,8 +269,7 @@ var _ = {
     });
     if (index === -1) {
       context.stac_extensions.push(newExtension);
-    }
-    else {
+    } else {
       context.stac_extensions[index] = newExtension;
     }
 
@@ -317,8 +307,8 @@ var _ = {
     objectsToCheck.push(context.links);
 
     let obj;
-    while(obj = objectsToCheck.pop()) {
-      Object.keys(obj).forEach(key => {
+    while ((obj = objectsToCheck.pop())) {
+      Object.keys(obj).forEach((key) => {
         // Add additional objects to check
         if (Array.isArray(obj.bands)) {
           objectsToCheck = objectsToCheck.concat(obj.bands);
@@ -335,7 +325,7 @@ var _ = {
   },
 
   mapValues(obj, key, oldValues, newValues) {
-    let fn = value => {
+    let fn = (value) => {
       let index = oldValues.indexOf(value);
       if (index >= 0) {
         return newValues[index];
@@ -344,8 +334,7 @@ var _ = {
     };
     if (Array.isArray(obj[key])) {
       obj[key] = obj[key].map(fn);
-    }
-    else if (typeof obj[key] !== 'undefined') {
+    } else if (typeof obj[key] !== 'undefined') {
       obj[key] = fn(obj[key]);
     }
     return true;
@@ -361,14 +350,12 @@ var _ = {
     let condition;
     if (fromSummary) {
       if (mergedSummary) {
-        condition = val => Array.isArray(val);
+        condition = (val) => Array.isArray(val);
+      } else {
+        condition = (val) => Array.isArray(val) && val.length === 1;
       }
-      else {
-        condition = val => Array.isArray(val) && val.length === 1;
-      }
-    }
-    else {
-      condition = _.isDefined
+    } else {
+      condition = _.isDefined;
     }
     if (condition(obj[key])) {
       context[key] = fromSummary && !mergedSummary ? obj[key][0] : obj[key];
@@ -391,7 +378,7 @@ var _ = {
       try {
         obj[key] = this.toISOString(obj[key]);
         return true;
-      } catch (error) { }
+      } catch (error) {}
     }
     delete obj[key];
     return false;
@@ -401,11 +388,11 @@ var _ = {
     if (!(date instanceof Date)) {
       date = new Date(date);
     }
-    return date.toISOString().replace(/\.0+(?=[-\+Z])/, ''); // Don't export milliseconds if not needed
+    return date.toISOString().replace(/\.0+(?=[-+Z])/, ''); // Don't export milliseconds if not needed
   },
 
   formatString(obj, key, format) {
-    const formatter = value => {
+    const formatter = (value) => {
       if (_.is(value, ['string', 'number'])) {
         return format.replaceAll('{}', value);
       }
@@ -413,23 +400,20 @@ var _ = {
     };
     if (Array.isArray(obj[key])) {
       obj[key] = obj[key].map(formatter);
-    }
-    else {
+    } else {
       obj[key] = formatter(obj[key]);
     }
-  }
-
+  },
 };
 
 var Checksum = {
-
   multihash: null,
 
   hexToUint8(hexString) {
     if (hexString.length === 0 || hexString.length % 2 !== 0) {
-      throw new Error(`The string "${hexString}" is not valid hex.`)
+      throw new Error(`The string "${hexString}" is not valid hex.`);
     }
-    return new Uint8Array(hexString.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+    return new Uint8Array(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
   },
 
   uint8ToHex(bytes) {
@@ -448,12 +432,10 @@ var Checksum = {
       console.warn(error);
       return false;
     }
-  }
-
+  },
 };
 
 var Catalog = {
-
   migrate(catalog, updateVersionNumber = true) {
     V.set(catalog);
     if (updateVersionNumber) {
@@ -474,11 +456,9 @@ var Catalog = {
 
     return catalog;
   },
-
 };
 
 var Collection = {
-
   migrate(collection, updateVersionNumber = true) {
     Catalog.migrate(collection, updateVersionNumber); // Migrates stac_version, stac_extensions, id, title, description, links
     collection.type = 'Collection';
@@ -488,11 +468,11 @@ var Collection = {
     _.ensure(collection, 'license', 'other') && DONE;
     _.ensure(collection, 'extent', {
       spatial: {
-        bbox: []
+        bbox: [],
       },
       temporal: {
-        interval: []
-      }
+        interval: [],
+      },
     }) && DONE;
 
     _.runAll(Collection, collection, collection);
@@ -510,31 +490,27 @@ var Collection = {
   },
 
   extent(collection) {
-    _.ensure(collection, "extent", {});
+    _.ensure(collection, 'extent', {});
 
     if (V.before('0.8.0')) {
       // Restructure spatial extent
       if (Array.isArray(collection.extent.spatial)) {
         collection.extent.spatial = {
-          bbox: [
-            collection.extent.spatial
-          ]
+          bbox: [collection.extent.spatial],
         };
       }
       // Restructure temporal extent
       if (Array.isArray(collection.extent.temporal)) {
         collection.extent.temporal = {
-          interval: [
-            collection.extent.temporal
-          ]
+          interval: [collection.extent.temporal],
         };
       }
     }
 
-    _.ensure(collection.extent, "spatial", {});
-    _.ensure(collection.extent.spatial, "bbox", []);
-    _.ensure(collection.extent, "temporal", {});
-    _.ensure(collection.extent.temporal, "interval", []);
+    _.ensure(collection.extent, 'spatial', {});
+    _.ensure(collection.extent.spatial, 'bbox', []);
+    _.ensure(collection.extent, 'temporal', {});
+    _.ensure(collection.extent.temporal, 'interval', []);
 
     if (V.before('1.0.0-rc.3')) {
       // The first extent in a Collection is always the overall extent, followed by more specific extents.
@@ -543,37 +519,35 @@ var Collection = {
         for (let interval of collection.extent.temporal.interval) {
           if (interval[0] === null) {
             min = null;
-          }
-          else if (typeof interval[0] === 'string' && min !== null) {
+          } else if (typeof interval[0] === 'string' && min !== null) {
             try {
               let start = new Date(interval[0]);
               if (typeof min === 'undefined' || start < min) {
                 min = start;
               }
-            } catch (error) { }
+            } catch (error) {}
           }
 
           if (interval[1] === null) {
             max = null;
-          }
-          else if (typeof interval[1] === 'string' && max !== null) {
+          } else if (typeof interval[1] === 'string' && max !== null) {
             try {
               let end = new Date(interval[1]);
               if (typeof max === 'undefined' || end > max) {
                 max = end;
               }
-            } catch (error) { }
+            } catch (error) {}
           }
         }
-        collection.extent.temporal.interval.unshift([
-          min ? _.toISOString(min) : null,
-          max ? _.toISOString(max) : null
-        ]);
+        collection.extent.temporal.interval.unshift([min ? _.toISOString(min) : null, max ? _.toISOString(max) : null]);
       }
       if (collection.extent.spatial.bbox.length > 1) {
-        let count = collection.extent.spatial.bbox.reduce((val, bbox) => Array.isArray(bbox) ? Math.max(bbox.length, val) : val, 4);
+        let count = collection.extent.spatial.bbox.reduce(
+          (val, bbox) => (Array.isArray(bbox) ? Math.max(bbox.length, val) : val),
+          4,
+        );
         if (count >= 4) {
-          let union = new Array(count).fill(null);
+          let union = Array.from({ length: count }).fill(null);
           let middle = count / 2;
           for (let bbox of collection.extent.spatial.bbox) {
             if (!Array.isArray(bbox) || bbox.length < 4) {
@@ -583,17 +557,14 @@ var Collection = {
               let c = bbox[i];
               if (union[i] === null) {
                 union[i] = c;
-              }
-              else if (i < middle) {
+              } else if (i < middle) {
                 union[i] = Math.min(c, union[i]);
-              }
-              else {
+              } else {
                 union[i] = Math.max(c, union[i]);
               }
-
             }
           }
-          if (union.findIndex(c => c === null) === -1) {
+          if (union.findIndex((c) => c === null) === -1) {
             collection.extent.spatial.bbox.unshift(union);
           }
         }
@@ -628,13 +599,11 @@ var Collection = {
             minimum: prop.extent[0],
             maximum: prop.extent[1],
           };
-        }
-        else if (Array.isArray(prop.values)) {
-          if (prop.values.filter(v => Array.isArray(v)).length === prop.values.length) {
+        } else if (Array.isArray(prop.values)) {
+          if (prop.values.filter((v) => Array.isArray(v)).length === prop.values.length) {
             // If it is an array of arrays, merge the arrays
             collection.summaries[key] = prop.values.reduce((a, b) => a.concat(b), []);
-          }
-          else {
+          } else {
             collection.summaries[key] = prop.values;
           }
         }
@@ -645,7 +614,11 @@ var Collection = {
     // Migrate Commons extension - part 2
     // Move properties to (single element) summaries if the Collection is standalone
     // see also https://github.com/stac-utils/stac-migrate/issues/3
-    if (V.before('1.0.0-beta.1') && _.isObject(collection.properties) && !collection.links.find(link => ['child', 'item'].includes(link.rel))) {
+    if (
+      V.before('1.0.0-beta.1') &&
+      _.isObject(collection.properties) &&
+      !collection.links.find((link) => ['child', 'item'].includes(link.rel))
+    ) {
       for (let key in collection.properties) {
         let value = collection.properties[key];
         if (!Array.isArray(value)) {
@@ -656,7 +629,7 @@ var Collection = {
     }
 
     if (V.before('1.0.0-rc.1')) {
-      _.mapObject(collection.summaries, val => {
+      _.mapObject(collection.summaries, (val) => {
         _.rename(val, 'min', 'minimum') && DONE;
         _.rename(val, 'max', 'maximum') && DONE;
         return val;
@@ -667,21 +640,27 @@ var Collection = {
     Fields.migrate(collection.summaries, collection, true);
 
     // Some fields should usually be on root-level if there's only one element
-    _.moveTo(collection.summaries, 'sci:doi', collection, true) && _.addExtension(collection, SCHEMAS.scientific) && DONE;
-    _.moveTo(collection.summaries, 'sci:publications', collection, true, true) && _.addExtension(collection, SCHEMAS.scientific) && DONE;
-    _.moveTo(collection.summaries, 'sci:citation', collection, true) && _.addExtension(collection, SCHEMAS.scientific) && DONE;
-    _.moveTo(collection.summaries, 'cube:dimensions', collection, true) && _.addExtension(collection, SCHEMAS.datacube) && DONE;
+    _.moveTo(collection.summaries, 'sci:doi', collection, true) &&
+      _.addExtension(collection, SCHEMAS.scientific) &&
+      DONE;
+    _.moveTo(collection.summaries, 'sci:publications', collection, true, true) &&
+      _.addExtension(collection, SCHEMAS.scientific) &&
+      DONE;
+    _.moveTo(collection.summaries, 'sci:citation', collection, true) &&
+      _.addExtension(collection, SCHEMAS.scientific) &&
+      DONE;
+    _.moveTo(collection.summaries, 'cube:dimensions', collection, true) &&
+      _.addExtension(collection, SCHEMAS.datacube) &&
+      DONE;
 
     // Remove summary field if empty
     if (Object.keys(collection.summaries).length === 0) {
       delete collection.summaries;
     }
-  }
-
+  },
 };
 
 var Item = {
-
   migrate(item, collection = null, updateVersionNumber = true) {
     V.set(item);
     if (updateVersionNumber) {
@@ -721,27 +700,23 @@ var Item = {
     (V.before('0.8.0') || commons) && _.populateExtensions(item, 'item') && DONE;
 
     return item;
-  }
-
+  },
 };
 
 var CollectionCollection = {
-
   migrate(object, updateVersionNumber = true) {
     _.ensure(object, 'collections', []) && DONE;
     _.ensure(object, 'links', []) && DONE;
 
     _.runAll(CollectionCollection, object, object);
 
-    object.collections = object.collections.map(collection => Collection.migrate(collection, updateVersionNumber));
+    object.collections = object.collections.map((collection) => Collection.migrate(collection, updateVersionNumber));
 
     return object;
   },
-
 };
 
 var ItemCollection = {
-
   migrate(itemCollection, updateVersionNumber = true) {
     _.ensure(itemCollection, 'type', 'FeatureCollection') && DONE;
     _.ensure(itemCollection, 'features', []) && DONE;
@@ -749,15 +724,15 @@ var ItemCollection = {
 
     _.runAll(ItemCollection, itemCollection, itemCollection);
 
-    itemCollection.features = itemCollection.features.map(feature => Item.migrate(feature, null, updateVersionNumber));
+    itemCollection.features = itemCollection.features.map((feature) =>
+      Item.migrate(feature, null, updateVersionNumber),
+    );
 
     return itemCollection;
   },
-
 };
 
 var Asset = {
-
   migrateAll(context, field = 'assets') {
     for (let key in context[field]) {
       Asset.migrate(context[field][key], context);
@@ -773,21 +748,22 @@ var Asset = {
   },
 
   mediaTypes(asset) {
-    _.is(asset.type, 'string') && _.mapValues(
-      asset, 'type',
-      ['image/vnd.stac.geotiff', 'image/vnd.stac.geotiff; cloud-optimized=true'],
-      ['image/tiff; application=geotiff', 'image/tiff; application=geotiff; profile=cloud-optimized']
-    );
-  }
-
+    _.is(asset.type, 'string') &&
+      _.mapValues(
+        asset,
+        'type',
+        ['image/vnd.stac.geotiff', 'image/vnd.stac.geotiff; cloud-optimized=true'],
+        ['image/tiff; application=geotiff', 'image/tiff; application=geotiff; profile=cloud-optimized'],
+      );
+  },
 };
 
 var Band = {
-
   migrateAll(obj, context) {
-
-    if (V.before('1.0.0')) { // Not sure when the index-based bands were removed
-      const bands = _.isObject(context.properties) && Array.isArray(context.properties.bands) ? context.properties.bands : [];
+    if (V.before('1.0.0')) {
+      // Not sure when the index-based bands were removed
+      const bands =
+        _.isObject(context.properties) && Array.isArray(context.properties.bands) ? context.properties.bands : [];
       if (Array.isArray(obj['eo:bands'])) {
         for (let i in obj['eo:bands']) {
           let band = obj['eo:bands'][i];
@@ -802,11 +778,11 @@ var Band = {
       }
     }
 
-    if (V.before("1.1.0-beta.1") && (Array.isArray(obj["raster:bands"]) || Array.isArray(obj["eo:bands"]))) {
-      _.ensure(obj, "bands", []);
+    if (V.before('1.1.0-beta.1') && (Array.isArray(obj['raster:bands']) || Array.isArray(obj['eo:bands']))) {
+      _.ensure(obj, 'bands', []);
 
-      const raster = obj["raster:bands"] || [];
-      const eo = obj["eo:bands"] || [];
+      const raster = obj['raster:bands'] || [];
+      const eo = obj['eo:bands'] || [];
       const length = Math.max(raster.length, eo.length);
       for (let i = 0; i < length; i++) {
         _.ensure(obj.bands, i, {});
@@ -814,10 +790,9 @@ var Band = {
         obj.bands[i] = Band.migrate(obj.bands[i], context);
       }
 
-      delete obj["raster:bands"];
-      delete obj["eo:bands"];
+      delete obj['raster:bands'];
+      delete obj['eo:bands'];
     }
-
   },
 
   migrate(band, context) {
@@ -846,12 +821,10 @@ var Band = {
       _.rename(band, 'offset', 'raster:offset') && DONE;
       _.rename(band, 'histogram', 'raster:histogram') && DONE;
     }
-  }
-
+  },
 };
 
 var Fields = {
-
   migrate(obj, context, summaries = false) {
     _.runAll(Fields, obj, context, summaries);
 
@@ -886,25 +859,36 @@ var Fields = {
 
   checksum(obj, context) {
     if (V.before('0.9.0') && Checksum.multihash) {
-      _.rename(obj, 'checksum:md5', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'md5') && DONE;
-      _.rename(obj, 'checksum:sha1', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'sha1') && DONE;
+      _.rename(obj, 'checksum:md5', 'checksum:multihash') &&
+        Checksum.toMultihash(obj, 'checksum:multihash', 'md5') &&
+        DONE;
+      _.rename(obj, 'checksum:sha1', 'checksum:multihash') &&
+        Checksum.toMultihash(obj, 'checksum:multihash', 'sha1') &&
+        DONE;
       // We assume sha2/3-256 although that may fail in some cases and other lengths are chosen
       // Never seen this implemtned in the wild, so let's try this until another use case comes up
-      _.rename(obj, 'checksum:sha2', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'sha2-256') && DONE;
-      _.rename(obj, 'checksum:sha3', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'sha3-256') && DONE;
+      _.rename(obj, 'checksum:sha2', 'checksum:multihash') &&
+        Checksum.toMultihash(obj, 'checksum:multihash', 'sha2-256') &&
+        DONE;
+      _.rename(obj, 'checksum:sha3', 'checksum:multihash') &&
+        Checksum.toMultihash(obj, 'checksum:multihash', 'sha3-256') &&
+        DONE;
     }
 
-    V.before('1.0.0-rc.1') && _.rename(obj, 'checksum:multihash', 'file:checksum') && _.addExtension(context, SCHEMAS.file) && DONE;
+    V.before('1.0.0-rc.1') &&
+      _.rename(obj, 'checksum:multihash', 'file:checksum') &&
+      _.addExtension(context, SCHEMAS.file) &&
+      DONE;
 
     _.removeExtension(context, 'checksum');
   },
 
   classification(obj, context) {
     if (V.before('1.1.0', 'classification')) {
-      _.forAll(obj, 'classification:classes', o => _.rename(o, 'color-hint', 'color_hint')) && DONE;
+      _.forAll(obj, 'classification:classes', (o) => _.rename(o, 'color-hint', 'color_hint')) && DONE;
     }
     if (V.before('2.0.0', 'classification')) {
-      _.forAll(obj, 'classification:classes', o => _.ensure(o, 'name', o.description)) && DONE;
+      _.forAll(obj, 'classification:classes', (o) => _.ensure(o, 'name', o.description)) && DONE;
     }
 
     _.upgradeExtension(context, SCHEMAS.classification);
@@ -995,12 +979,21 @@ var Fields = {
   sar(obj, context, summary) {
     // Which version have they been (re)moved?
     _.rename(obj, 'sar:incidence_angle', 'view:incidence_angle') && _.addExtension(context, SCHEMAS.view) && DONE;
-    _.rename(obj, 'sar:pass_direction', 'sat:orbit_state') && _.mapValues(obj, 'sat:orbit_state', [null], ['geostationary']) && _.addExtension(context, SCHEMAS.sat) && DONE;
+    _.rename(obj, 'sar:pass_direction', 'sat:orbit_state') &&
+      _.mapValues(obj, 'sat:orbit_state', [null], ['geostationary']) &&
+      _.addExtension(context, SCHEMAS.sat) &&
+      DONE;
 
     if (V.before('0.7.0')) {
       _.flattenArray(obj, 'sar:resolution', ['sar:resolution_range', 'sar:resolution_azimuth'], summary) && DONE;
-      _.flattenArray(obj, 'sar:pixel_spacing', ['sar:pixel_spacing_range', 'sar:pixel_spacing_azimuth'], summary) && DONE;
-      _.flattenArray(obj, 'sar:looks', ['sar:looks_range', 'sar:looks_azimuth', 'sar:looks_equivalent_number'], summary) && DONE;
+      _.flattenArray(obj, 'sar:pixel_spacing', ['sar:pixel_spacing_range', 'sar:pixel_spacing_azimuth'], summary) &&
+        DONE;
+      _.flattenArray(
+        obj,
+        'sar:looks',
+        ['sar:looks_range', 'sar:looks_azimuth', 'sar:looks_equivalent_number'],
+        summary,
+      ) && DONE;
       _.rename(obj, 'sar:off_nadir', 'view:off_nadir') && _.addExtension(context, SCHEMAS.view) && DONE;
     }
 
@@ -1010,8 +1003,14 @@ var Fields = {
       _.rename(obj, 'sar:constellation', 'constellation') && DONE;
       _.rename(obj, 'sar:type', 'sar:product_type') && DONE;
       _.rename(obj, 'sar:polarization', 'sar:polarizations') && DONE;
-      _.flattenOneElementArray(obj, 'sar:absolute_orbit', summary) && _.rename(obj, 'sar:absolute_orbit', 'sat:absolute_orbit') && _.addExtension(context, SCHEMAS.sat) && DONE;
-      _.flattenOneElementArray(obj, 'sar:relative_orbit', summary) && _.rename(obj, 'sar:relative_orbit', 'sat:relative_orbit') && _.addExtension(context, SCHEMAS.sat) && DONE;
+      _.flattenOneElementArray(obj, 'sar:absolute_orbit', summary) &&
+        _.rename(obj, 'sar:absolute_orbit', 'sat:absolute_orbit') &&
+        _.addExtension(context, SCHEMAS.sat) &&
+        DONE;
+      _.flattenOneElementArray(obj, 'sar:relative_orbit', summary) &&
+        _.rename(obj, 'sar:relative_orbit', 'sat:relative_orbit') &&
+        _.addExtension(context, SCHEMAS.sat) &&
+        DONE;
     }
 
     _.upgradeExtension(context, SCHEMAS.sar);
@@ -1035,7 +1034,8 @@ var Fields = {
     _.upgradeExtension(context, SCHEMAS.scientific);
   },
 
-  item(obj) { // Single Item
+  item(obj) {
+    // Single Item
     if (V.before('0.8.0')) {
       _.rename(obj, 'item:license', 'license') && DONE;
       _.rename(obj, 'item:providers', 'providers') && DONE;
@@ -1053,12 +1053,10 @@ var Fields = {
     // Nothing to do
 
     _.upgradeExtension(context, SCHEMAS.view);
-  }
-
+  },
 };
 
 var Migrate = {
-
   item(item, collection = null, updateVersionNumber = true) {
     return Item.migrate(item, collection, updateVersionNumber);
   },
@@ -1082,25 +1080,23 @@ var Migrate = {
   stac(object, updateVersionNumber = true) {
     if (object.type === 'Feature') {
       return Migrate.item(object, null, updateVersionNumber);
-    }
-    else if (object.type === 'FeatureCollection') {
+    } else if (object.type === 'FeatureCollection') {
       return Migrate.itemCollection(object, updateVersionNumber);
-    }
-    else if (object.type === 'Collection' || (!object.type && _.isDefined(object.extent) && _.isDefined(object.license))) {
+    } else if (
+      object.type === 'Collection' ||
+      (!object.type && _.isDefined(object.extent) && _.isDefined(object.license))
+    ) {
       return Migrate.collection(object, updateVersionNumber);
-    }
-    else if (!object.type && Array.isArray(object.collections)) {
+    } else if (!object.type && Array.isArray(object.collections)) {
       return Migrate.collectionCollection(object, updateVersionNumber);
-    }
-    else {
+    } else {
       return Migrate.catalog(object, updateVersionNumber);
     }
   },
 
   enableMultihash(multihash) {
     Checksum.multihash = multihash;
-  }
-
+  },
 };
 
 module.exports = Migrate;

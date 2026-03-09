@@ -30,14 +30,18 @@
     "yargs": "^17.6.2"
   },
   "devDependencies": {
-    "jest": "^29.0.0",
-    "jest-html-reporter": "^3.3.0"
+    "jest": "^30.0.0",
+    "jest-html-reporter": "^4.3.0",
+    "oxlint": "^1.51.0",
+    "prettier": "^3.8.1"
   },
   "files": [
     "bin/cli.js",
     "migrate.js"
   ],
   "scripts": {
-    "test": " jest"
+    "test": "jest",
+    "lint": "oxlint --fix -c .oxlintrc.json . --ignore-pattern tests",
+    "format": "prettier --write ."
   }
 }
