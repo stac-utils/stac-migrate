@@ -423,37 +423,45 @@ var _ = {
 
 var Checksum = {
 
-  multihash: false,
+  // Multicodec codes, see https://github.com/multiformats/multicodec/
+  codes: {
+    'md5': 0xd5,
+    'sha1': 0x11,
+    'sha2-256': 0x12,
+    'sha3-256': 0x16
+  },
 
-  // Multihashes are hash digests which contain a prefix with the hash function
-  // used and its length. They are encoded as varints, but in all cases below,
-  // the varints are the same bits as the original values as all are < 128.
-  encodeMultihash(digest, algo) {
-    // Directly use hex strings as the input is already a hex string.
-    // The values used here are from the multicodec code table at
-    // https://github.com/multiformats/multicodec/
-    const codes = {
-      'md5': '0d',
-      'sha1': '11',
-      'sha2-256': '12',
-      'sha3-256': '16'
-    };
-    if (!algo in codes) {
-      throw new Error('Unsupported hash function');
+  // Unsigned varint as a hex string.
+  encodeVarint(value) {
+    let hex = '';
+    while (value >= 0x80) {
+      hex += ((value & 0x7f) | 0x80).toString(16).padStart(2, '0');
+      value >>>= 7;
     }
-    const code = codes[algo];
-    // The input digest is a hex string, hence is the byte length half the
-    // length of the string.
-    const length = (digest.length / 2).toString(16).padStart(2, '0');
+    hex += value.toString(16).padStart(2, '0');
+    return hex;
+  },
+
+  // Prefix a hex digest with its varint-encoded multicodec code and length.
+  encodeMultihash(digest, algo) {
+    if (!(algo in Checksum.codes)) {
+      throw new Error(`Unsupported hash function: ${algo}`);
+    }
+    if (digest.length === 0 || !/^[0-9a-f]+$/i.test(digest) || digest.length % 2 !== 0) {
+      throw new Error(`The string "${digest}" is not valid hex.`);
+    }
+    const code = Checksum.encodeVarint(Checksum.codes[algo]);
+    // Hex string, so byte length is half the string length.
+    const length = Checksum.encodeVarint(digest.length / 2);
     return code + length + digest;
   },
 
   toMultihash(obj, key, algo) {
-    if (!Checksum.multihash || !_.is(obj[key], 'string')) {
+    if (!_.is(obj[key], 'string')) {
       return false;
     }
     try {
-      obj[key] = Checksum.encodeMultihash(obj[key], algo)
+      obj[key] = Checksum.encodeMultihash(obj[key], algo);
       return true;
     } catch (error) {
       console.warn(error);
@@ -896,7 +904,7 @@ var Fields = {
   },
 
   checksum(obj, context) {
-    if (V.before('0.9.0') && Checksum.multihash) {
+    if (V.before('0.9.0')) {
       _.rename(obj, 'checksum:md5', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'md5') && DONE;
       _.rename(obj, 'checksum:sha1', 'checksum:multihash') && Checksum.toMultihash(obj, 'checksum:multihash', 'sha1') && DONE;
       // We assume sha2/3-256 although that may fail in some cases and other lengths are chosen
@@ -1108,9 +1116,8 @@ var Migrate = {
     }
   },
 
-  enableMultihash() {
-    Checksum.multihash = true;
-  }
+  // Deprecated no-op; multihash conversion is always on.
+  enableMultihash() {}
 
 };
 
