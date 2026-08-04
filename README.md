@@ -45,8 +45,6 @@ The commands follow the different methods above and has the same "restrictions" 
 
 - Checksum (legacy)
 
-  **Note:** Use `Migrate.enableMultihash(require('multihashes'))` to enable conversion from pre-0.9 checksums - disabled by default to keep the bundle size low
-
   _Pre-0.9 `checksum:sha2` / `checksum:sha3` are assumed to be `sha2-256` / `sha3-256`; other lengths convert incorrectly._
 
 - CF 1.0.0

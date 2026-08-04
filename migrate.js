@@ -411,26 +411,45 @@ var _ = {
 };
 
 var Checksum = {
-  multihash: null,
-
-  hexToUint8(hexString) {
-    if (hexString.length === 0 || hexString.length % 2 !== 0) {
-      throw new Error(`The string "${hexString}" is not valid hex.`);
-    }
-    return new Uint8Array(hexString.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
+  // Multicodec codes, see https://github.com/multiformats/multicodec/
+  codes: {
+    md5: 0xd5,
+    sha1: 0x11,
+    'sha2-256': 0x12,
+    'sha3-256': 0x16,
   },
 
-  uint8ToHex(bytes) {
-    return bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+  // Unsigned varint as a hex string.
+  encodeVarint(value) {
+    let hex = '';
+    while (value >= 0x80) {
+      hex += ((value & 0x7f) | 0x80).toString(16).padStart(2, '0');
+      value >>>= 7;
+    }
+    hex += value.toString(16).padStart(2, '0');
+    return hex;
+  },
+
+  // Prefix a hex digest with its varint-encoded multicodec code and length.
+  encodeMultihash(digest, algo) {
+    if (!(algo in Checksum.codes)) {
+      throw new Error(`Unsupported hash function: ${algo}`);
+    }
+    if (digest.length === 0 || !/^[0-9a-f]+$/i.test(digest) || digest.length % 2 !== 0) {
+      throw new Error(`The string "${digest}" is not valid hex.`);
+    }
+    const code = Checksum.encodeVarint(Checksum.codes[algo]);
+    // Hex string, so byte length is half the string length.
+    const length = Checksum.encodeVarint(digest.length / 2);
+    return code + length + digest;
   },
 
   toMultihash(obj, key, algo) {
-    if (!Checksum.multihash || !_.is(obj[key], 'string')) {
+    if (!_.is(obj[key], 'string')) {
       return false;
     }
     try {
-      const encoded = Checksum.multihash.encode(Checksum.hexToUint8(obj[key]), algo);
-      obj[key] = Checksum.uint8ToHex(encoded);
+      obj[key] = Checksum.encodeMultihash(obj[key], algo);
       return true;
     } catch (error) {
       console.warn(error);
@@ -867,7 +886,7 @@ var Fields = {
   },
 
   checksum(obj, context) {
-    if (V.before('0.9.0') && Checksum.multihash) {
+    if (V.before('0.9.0')) {
       _.rename(obj, 'checksum:md5', 'checksum:multihash') &&
         Checksum.toMultihash(obj, 'checksum:multihash', 'md5') &&
         DONE;
@@ -1134,9 +1153,8 @@ var Migrate = {
     }
   },
 
-  enableMultihash(multihash) {
-    Checksum.multihash = multihash;
-  },
+  // Deprecated no-op; multihash conversion is always on.
+  enableMultihash() {},
 };
 
 module.exports = Migrate;
