@@ -7,23 +7,27 @@ var compareVersions = require('compare-versions');
 const LATEST_VERSION = '1.1.0';
 const DONE = true; // This is used to verify in code coverage whether something has been used or not
 const SCHEMAS = {
+  cf: 'https://stac-extensions.github.io/cf/v1.0.0/schema.json',
   classification: 'https://stac-extensions.github.io/classification/v2.0.0/schema.json',
-  datacube: 'https://stac-extensions.github.io/datacube/v2.2.0/schema.json',
+  datacube: 'https://stac-extensions.github.io/datacube/v2.3.0/schema.json',
   eo: 'https://stac-extensions.github.io/eo/v2.0.0/schema.json',
   file: 'https://stac-extensions.github.io/file/v2.1.0/schema.json',
+  instruments: 'https://stac-extensions.github.io/instruments/v0.1.0/schema.json',
   'item-assets': 'https://stac-extensions.github.io/item-assets/v1.0.0/schema.json',
   label: 'https://stac-extensions.github.io/label/v1.0.1/schema.json',
-  pointcloud: 'https://stac-extensions.github.io/pointcloud/v1.0.0/schema.json',
+  order: 'https://stac-extensions.github.io/order/v1.1.0/schema.json',
+  pointcloud: 'https://stac-extensions.github.io/pointcloud/v2.0.0/schema.json',
   processing: 'https://stac-extensions.github.io/processing/v1.2.0/schema.json',
+  product: 'https://stac-extensions.github.io/product/v1.0.0/schema.json',
   projection: 'https://stac-extensions.github.io/projection/v2.0.0/schema.json',
   raster: 'https://stac-extensions.github.io/raster/v2.0.0/schema.json',
-  sar: 'https://stac-extensions.github.io/sar/v1.0.0/schema.json',
-  sat: 'https://stac-extensions.github.io/sat/v1.0.0/schema.json',
+  sar: 'https://stac-extensions.github.io/sar/v1.3.2/schema.json',
+  sat: 'https://stac-extensions.github.io/sat/v1.2.0/schema.json',
   scientific: 'https://stac-extensions.github.io/scientific/v1.0.0/schema.json',
   table: 'https://stac-extensions.github.io/table/v1.2.0/schema.json',
   timestamps: 'https://stac-extensions.github.io/timestamps/v1.1.0/schema.json',
   version: 'https://stac-extensions.github.io/version/v1.2.0/schema.json',
-  view: 'https://stac-extensions.github.io/view/v1.0.0/schema.json',
+  view: 'https://stac-extensions.github.io/view/v1.1.0/schema.json',
 };
 const EXTENSIONS = {
   // Add a : at the end to indicate it has a prefix, otherwise list all fields separately (see version extension for example).
@@ -451,6 +455,11 @@ var Catalog = {
     _.ensure(catalog, 'links', []) && DONE;
 
     _.runAll(Catalog, catalog, catalog);
+
+    // Migrate extension fields that live directly on the Catalog/Collection root
+    // (e.g. order, timestamps, version). Assets, Item properties, bands and Collection
+    // summaries are migrated through their own Fields.migrate calls.
+    Fields.migrate(catalog, catalog);
 
     V.before('0.8.0') && _.populateExtensions(catalog, 'catalog') && DONE;
 
@@ -894,6 +903,12 @@ var Fields = {
     _.upgradeExtension(context, SCHEMAS.classification);
   },
 
+  cf(obj, context) {
+    _.rename(obj, 'cf:parameter', 'cf:standard_name') && DONE;
+
+    _.upgradeExtension(context, SCHEMAS.cf);
+  },
+
   cube(obj, context) {
     // We'd need to convert proj strings to something else for v1.0 -> v2.0, but that's unfeasible here.
     // Nothing else to do here.
@@ -954,8 +969,20 @@ var Fields = {
     _.upgradeExtension(context, SCHEMAS.label);
   },
 
+  order(obj, context) {
+    if (_.rename(obj, 'order:expiration_date', 'expires')) {
+      _.toUTC(obj, 'expires');
+      _.addExtension(context, SCHEMAS.timestamps) && DONE;
+    }
+
+    _.upgradeExtension(context, SCHEMAS.order);
+  },
+
   pc(obj, context) {
     V.before('0.8.0') && _.rename(obj, 'pc:schema', 'pc:schemas') && DONE;
+
+    // pc:encoding was removed in Point Cloud 2.0.0 (superseded by the asset's media type),
+    // but it cannot be reliably reconstructed, so it is left untouched.
 
     _.upgradeExtension(context, SCHEMAS.pointcloud);
   },
@@ -964,6 +991,12 @@ var Fields = {
     // Nothing to do
 
     _.upgradeExtension(context, SCHEMAS.processing);
+  },
+
+  product(obj, context) {
+    // Nothing to do
+
+    _.upgradeExtension(context, SCHEMAS.product);
   },
 
   proj(obj, context) {
@@ -1011,6 +1044,13 @@ var Fields = {
         _.rename(obj, 'sar:relative_orbit', 'sat:relative_orbit') &&
         _.addExtension(context, SCHEMAS.sat) &&
         DONE;
+    }
+
+    _.rename(obj, 'sar:product_type', 'product:type') && _.addExtension(context, SCHEMAS.product) && DONE;
+
+    if (_.rename(obj, 'sar:instrument_mode', 'instrument_modes')) {
+      !summary && _.toArray(obj, 'instrument_modes');
+      _.addExtension(context, SCHEMAS.instruments) && DONE;
     }
 
     _.upgradeExtension(context, SCHEMAS.sar);

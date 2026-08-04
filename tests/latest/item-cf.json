@@ -1,0 +1,19 @@
+{
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/cf/v1.0.0/schema.json"
+  ],
+  "id": "cf-example",
+  "type": "Feature",
+  "bbox": [-180, -90, 180, 90],
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [[[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]]
+  },
+  "properties": {
+    "datetime": "2020-01-01T00:00:00Z",
+    "cf:standard_name": "air_temperature"
+  },
+  "assets": {},
+  "links": []
+}
