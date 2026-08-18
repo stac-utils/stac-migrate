@@ -806,7 +806,10 @@ var Band = {
       }
     }
 
-    if (V.before('1.1.0-beta.1') && (Array.isArray(obj['raster:bands']) || Array.isArray(obj['eo:bands']))) {
+    if (
+      (Array.isArray(obj['raster:bands']) || Array.isArray(obj['eo:bands'])) &&
+      (V.before('1.1.0-beta.1') || V.before('2.0.0-beta.1', 'raster') || V.before('2.0.0-beta.1', 'eo'))
+    ) {
       _.ensure(obj, 'bands', []);
 
       const raster = obj['raster:bands'] || [];
