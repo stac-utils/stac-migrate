@@ -83,7 +83,7 @@ The commands follow the different methods above and has the same "restrictions" 
 
   _The deprecated `product:status` value `qualitydegraded` becomes `accepted` with `product:quality_status` set to `degraded`._
 
-- Projection 2.0.0
+- Projection 2.1.0
 - Raster 2.0.0
 - SAR 1.3.2
 - Satellite 1.2.0

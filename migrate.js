@@ -19,7 +19,7 @@ const SCHEMAS = {
   pointcloud: 'https://stac-extensions.github.io/pointcloud/v2.0.0/schema.json',
   processing: 'https://stac-extensions.github.io/processing/v1.3.0/schema.json',
   product: 'https://stac-extensions.github.io/product/v1.1.0/schema.json',
-  projection: 'https://stac-extensions.github.io/projection/v2.0.0/schema.json',
+  projection: 'https://stac-extensions.github.io/projection/v2.1.0/schema.json',
   raster: 'https://stac-extensions.github.io/raster/v2.0.0/schema.json',
   sar: 'https://stac-extensions.github.io/sar/v1.3.2/schema.json',
   sat: 'https://stac-extensions.github.io/sat/v1.2.0/schema.json',
