@@ -12,7 +12,7 @@ const SCHEMAS = {
   datacube: 'https://stac-extensions.github.io/datacube/v2.3.0/schema.json',
   eo: 'https://stac-extensions.github.io/eo/v2.0.0/schema.json',
   file: 'https://stac-extensions.github.io/file/v2.1.0/schema.json',
-  instruments: 'https://stac-extensions.github.io/instruments/v0.1.0/schema.json',
+  instruments: 'https://stac-extensions.github.io/instruments/v0.2.0/schema.json',
   'item-assets': 'https://stac-extensions.github.io/item-assets/v1.0.0/schema.json',
   label: 'https://stac-extensions.github.io/label/v1.0.1/schema.json',
   order: 'https://stac-extensions.github.io/order/v1.1.0/schema.json',
@@ -37,6 +37,7 @@ const EXTENSIONS = {
     'cube:': SCHEMAS.datacube,
     'eo:': SCHEMAS.eo,
     'file:': SCHEMAS.file,
+    'instrument:': SCHEMAS.instruments,
     'label:': SCHEMAS.label,
     'pc:': SCHEMAS.pointcloud,
     'processing:': SCHEMAS.processing,
@@ -978,6 +979,12 @@ var Fields = {
     _.upgradeExtension(context, SCHEMAS.file);
   },
 
+  instruments(obj, context) {
+    _.rename(obj, 'instrument_modes', 'instrument:modes') && _.addExtension(context, SCHEMAS.instruments) && DONE;
+
+    _.upgradeExtension(context, SCHEMAS.instruments);
+  },
+
   label(obj, context) {
     // Migrate 0.8.0-rc1 non-pluralized forms
     if (V.before('0.8.0')) {
@@ -1070,8 +1077,8 @@ var Fields = {
 
     _.rename(obj, 'sar:product_type', 'product:type') && _.addExtension(context, SCHEMAS.product) && DONE;
 
-    if (_.rename(obj, 'sar:instrument_mode', 'instrument_modes')) {
-      !summary && _.toArray(obj, 'instrument_modes');
+    if (_.rename(obj, 'sar:instrument_mode', 'instrument:modes')) {
+      !summary && _.toArray(obj, 'instrument:modes');
       _.addExtension(context, SCHEMAS.instruments) && DONE;
     }
 

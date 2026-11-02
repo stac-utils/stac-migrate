@@ -1,7 +1,7 @@
 {
   "stac_version":"1.1.0",
   "stac_extensions": [
-    "https://stac-extensions.github.io/instruments/v0.1.0/schema.json",
+    "https://stac-extensions.github.io/instruments/v0.2.0/schema.json",
     "https://stac-extensions.github.io/product/v1.0.0/schema.json"
   ],
   "type":"Collection",
@@ -22,7 +22,7 @@
     "platform":["Sentinel-1A"],
     "constellation":["Sentinel-1"],
     "instruments":["C-SAR"],
-    "instrument_modes":["EW"],
+    "instrument:modes":["EW"],
     "sar:polarizations":["HH"],
     "sar:resolution_range":[50],
     "sar:resolution_azimuth":[50],

@@ -1,0 +1,25 @@
+{
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/instruments/v0.1.0/schema.json"
+  ],
+  "id": "instruments-example",
+  "type": "Feature",
+  "bbox": [-180, -90, 180, 90],
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [[[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]]
+  },
+  "properties": {
+    "datetime": "2020-01-01T00:00:00Z",
+    "instruments": ["c-sar", "gps"],
+    "instrument_modes": ["IW", null]
+  },
+  "assets": {
+    "data": {
+      "href": "./data.tif",
+      "instrument_modes": ["IW", null]
+    }
+  },
+  "links": []
+}

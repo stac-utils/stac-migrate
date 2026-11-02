@@ -70,7 +70,7 @@ The commands follow the different methods above and has the same "restrictions" 
 
   _`file:nodata` maps to the single-valued `nodata` (first value kept); extra values are copied to a non-standard `nodata:values`._
 
-- Instruments 0.1.0
+- Instruments 0.2.0
 - Item Asset Definition 1.0.0 (legacy)
 - Label 1.0.1
 - Order 1.1.0
