@@ -78,7 +78,7 @@ The commands follow the different methods above and has the same "restrictions" 
 
   _`pc:encoding` is not rewritten and left in place._
 
-- Processing 1.2.0
+- Processing 1.3.0
 - Product 1.0.0
 - Projection 2.0.0
 - Raster 2.0.0
