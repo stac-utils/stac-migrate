@@ -57,6 +57,10 @@ The commands follow the different methods above and has the same "restrictions" 
 
   _A non-standalone Collection (with `child`/`item` links) migrated on its own drops its shared `properties`; pass the Items via `Migrate.item(item, collection)` to keep them._
 
+- Contacts 1.0.1
+
+  _Migrates from 0.1.0 onwards. The structure of 0.0.1 is not converted._
+
 - Data Cube 2.3.0
 
   _A `cube:dimensions` `reference_system` given as a PROJ4 or WKT string is not converted to the 2.0.0 representation._

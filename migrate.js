@@ -9,6 +9,7 @@ const DONE = true; // This is used to verify in code coverage whether something 
 const SCHEMAS = {
   cf: 'https://stac-extensions.github.io/cf/v1.0.0/schema.json',
   classification: 'https://stac-extensions.github.io/classification/v2.0.0/schema.json',
+  contacts: 'https://stac-extensions.github.io/contacts/v1.0.1/schema.json',
   datacube: 'https://stac-extensions.github.io/datacube/v2.3.0/schema.json',
   eo: 'https://stac-extensions.github.io/eo/v2.0.0/schema.json',
   file: 'https://stac-extensions.github.io/file/v2.1.0/schema.json',
@@ -930,6 +931,12 @@ var Fields = {
     _.rename(obj, 'cf:parameter', 'cf:standard_name') && DONE;
 
     _.upgradeExtension(context, SCHEMAS.cf);
+  },
+
+  contacts(obj, context) {
+    _.forAll(obj, 'contacts', (c) => _.isObject(c) && _.rename(c, 'positionName', 'position')) && DONE;
+
+    _.upgradeExtension(context, SCHEMAS.contacts);
   },
 
   cube(obj, context) {
