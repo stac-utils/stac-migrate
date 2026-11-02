@@ -18,7 +18,7 @@ const SCHEMAS = {
   order: 'https://stac-extensions.github.io/order/v1.1.0/schema.json',
   pointcloud: 'https://stac-extensions.github.io/pointcloud/v2.0.0/schema.json',
   processing: 'https://stac-extensions.github.io/processing/v1.3.0/schema.json',
-  product: 'https://stac-extensions.github.io/product/v1.0.0/schema.json',
+  product: 'https://stac-extensions.github.io/product/v1.1.0/schema.json',
   projection: 'https://stac-extensions.github.io/projection/v2.0.0/schema.json',
   raster: 'https://stac-extensions.github.io/raster/v2.0.0/schema.json',
   sar: 'https://stac-extensions.github.io/sar/v1.3.2/schema.json',
@@ -1022,8 +1022,18 @@ var Fields = {
     _.upgradeExtension(context, SCHEMAS.processing);
   },
 
-  product(obj, context) {
-    // Nothing to do
+  product(obj, context, summaries) {
+    const status = obj['product:status'];
+    if (status === 'qualitydegraded' && !_.isDefined(obj['product:quality_status'])) {
+      obj['product:status'] = 'accepted';
+      obj['product:quality_status'] = 'degraded';
+      DONE;
+    } else if (summaries && Array.isArray(status) && status.includes('qualitydegraded')) {
+      obj['product:status'] = [...new Set(status.map((s) => (s === 'qualitydegraded' ? 'accepted' : s)))];
+      _.ensure(obj, 'product:quality_status', []);
+      !obj['product:quality_status'].includes('degraded') && obj['product:quality_status'].push('degraded');
+      DONE;
+    }
 
     _.upgradeExtension(context, SCHEMAS.product);
   },

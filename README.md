@@ -79,7 +79,10 @@ The commands follow the different methods above and has the same "restrictions" 
   _`pc:encoding` is not rewritten and left in place._
 
 - Processing 1.3.0
-- Product 1.0.0
+- Product 1.1.0
+
+  _The deprecated `product:status` value `qualitydegraded` becomes `accepted` with `product:quality_status` set to `degraded`._
+
 - Projection 2.0.0
 - Raster 2.0.0
 - SAR 1.3.2

@@ -1,0 +1,21 @@
+{
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/product/v1.1.0/schema.json"
+  ],
+  "id": "product-example",
+  "type": "Feature",
+  "bbox": [-180, -90, 180, 90],
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [[[-180, -90], [180, -90], [180, 90], [-180, 90], [-180, -90]]]
+  },
+  "properties": {
+    "datetime": "2020-01-01T00:00:00Z",
+    "product:type": "S2MSI2A",
+    "product:status": "accepted",
+    "product:quality_status": "degraded"
+  },
+  "assets": {},
+  "links": []
+}
