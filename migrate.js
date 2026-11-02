@@ -25,11 +25,31 @@ const SCHEMAS = {
   sar: 'https://stac-extensions.github.io/sar/v1.3.2/schema.json',
   sat: 'https://stac-extensions.github.io/sat/v1.2.0/schema.json',
   scientific: 'https://stac-extensions.github.io/scientific/v1.0.0/schema.json',
+  'sentinel-1': 'https://stac-extensions.github.io/sentinel-1/v0.2.0/schema.json',
+  'sentinel-3': 'https://stac-extensions.github.io/sentinel-3/v0.2.0/schema.json',
+  'sentinel-5p': 'https://stac-extensions.github.io/sentinel-5p/v0.2.0/schema.json',
   table: 'https://stac-extensions.github.io/table/v1.3.0/schema.json',
   timestamps: 'https://stac-extensions.github.io/timestamps/v1.1.0/schema.json',
   version: 'https://stac-extensions.github.io/version/v1.2.0/schema.json',
   view: 'https://stac-extensions.github.io/view/v1.1.0/schema.json',
 };
+const S3_STATISTICS = [
+  'bright',
+  'closed_sea',
+  'coastal',
+  'continental_ice',
+  'cosmetic',
+  'dubious_samples',
+  'duplicated',
+  'fresh_inland_water',
+  'invalid',
+  'land',
+  'open_ocean',
+  'out_of_range',
+  'saline_water',
+  'saturated',
+  'tidal_region',
+];
 const EXTENSIONS = {
   // Add a : at the end to indicate it has a prefix, otherwise list all fields separately (see version extension for example).
   itemAndCollection: {
@@ -1112,6 +1132,53 @@ var Fields = {
     }
 
     _.upgradeExtension(context, SCHEMAS.sat);
+  },
+
+  s1(obj, context) {
+    _.rename(obj, 's1:processing_datetime', 'processing:datetime') &&
+      _.addExtension(context, SCHEMAS.processing) &&
+      DONE;
+    _.rename(obj, 's1:processing_level', 'processing:level') &&
+      _.mapValues(obj, 'processing:level', ['0', '1', '2'], ['L0', 'L1', 'L2']) &&
+      _.addExtension(context, SCHEMAS.processing) &&
+      DONE;
+    _.rename(obj, 's1:shape', 'proj:shape') && _.addExtension(context, SCHEMAS.projection) && DONE;
+
+    _.upgradeExtension(context, SCHEMAS['sentinel-1']);
+  },
+
+  s3(obj, context, summaries) {
+    _.rename(obj, 's3:product_type', 'product:type') && _.addExtension(context, SCHEMAS.product) && DONE;
+    _.rename(obj, 's3:snow_or_ice', 'eo:snow_cover') && _.addExtension(context, SCHEMAS.eo) && DONE;
+
+    // Only the numeric GSD maps to gsd, the GSD objects of the other products are ambiguous
+    const gsd = obj['s3:gsd'];
+    if (_.is(gsd, 'number') || (summaries && Array.isArray(gsd) && gsd.every((v) => _.is(v, 'number')))) {
+      _.rename(obj, 's3:gsd', 'gsd') && DONE;
+    }
+
+    if (!summaries) {
+      for (let key of S3_STATISTICS) {
+        let oldKey = 's3:' + key;
+        if (_.is(obj[oldKey], 'number')) {
+          _.ensure(obj, 'statistics', {});
+          if (!_.isDefined(obj.statistics[key])) {
+            obj.statistics[key] = obj[oldKey];
+            delete obj[oldKey];
+            DONE;
+          }
+        }
+      }
+    }
+
+    _.upgradeExtension(context, SCHEMAS['sentinel-3']);
+  },
+
+  s5p(obj, context) {
+    _.rename(obj, 's5p:product_type', 'product:type') && _.addExtension(context, SCHEMAS.product) && DONE;
+    _.rename(obj, 's5p:shape', 'proj:shape') && _.addExtension(context, SCHEMAS.projection) && DONE;
+
+    _.upgradeExtension(context, SCHEMAS['sentinel-5p']);
   },
 
   sci(obj, context) {

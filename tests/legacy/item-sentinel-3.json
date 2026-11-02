@@ -1,0 +1,52 @@
+{
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/sentinel-3/v0.1.0/schema.json"
+  ],
+  "id": "s3-example",
+  "type": "Feature",
+  "bbox": [
+    -180,
+    -90,
+    180,
+    90
+  ],
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -180,
+          -90
+        ],
+        [
+          180,
+          -90
+        ],
+        [
+          180,
+          90
+        ],
+        [
+          -180,
+          90
+        ],
+        [
+          -180,
+          -90
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "datetime": "2020-01-01T00:00:00Z",
+    "s3:product_type": "OL_2_WFR___",
+    "s3:product_name": "olci-wfr",
+    "s3:gsd": 300,
+    "s3:snow_or_ice": 1.5,
+    "s3:land": 40.2,
+    "s3:open_ocean": 58.3
+  },
+  "assets": {},
+  "links": []
+}

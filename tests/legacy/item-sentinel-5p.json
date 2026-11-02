@@ -1,0 +1,52 @@
+{
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/sentinel-5p/v0.1.0/schema.json"
+  ],
+  "id": "s5p-example",
+  "type": "Feature",
+  "bbox": [
+    -180,
+    -90,
+    180,
+    90
+  ],
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -180,
+          -90
+        ],
+        [
+          180,
+          -90
+        ],
+        [
+          180,
+          90
+        ],
+        [
+          -180,
+          90
+        ],
+        [
+          -180,
+          -90
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "datetime": "2020-01-01T00:00:00Z",
+    "s5p:product_type": "L2__NO2___",
+    "s5p:product_name": "no2",
+    "s5p:shape": [
+      4173,
+      450
+    ]
+  },
+  "assets": {},
+  "links": []
+}

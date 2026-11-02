@@ -92,6 +92,18 @@ The commands follow the different methods above and has the same "restrictions" 
 - SAR 1.3.2
 - Satellite 1.2.0
 - Scientific Citation 1.0.0
+- Sentinel-1 0.2.0
+
+  _`s1:resolution`, `s1:product_identifier` and `s1:product_timeliness` are not migrated, as they have no 1:1 replacement._
+
+- Sentinel-3 0.2.0
+
+  _`s3:product_name`, `s3:processing_timeliness`, `s3:lrm_mode`, `s3:sar_mode` and the `s3:gsd` objects are not migrated, as they have no 1:1 replacement._
+
+- Sentinel-5P 0.2.0
+
+  _`s5p:product_name`, `s5p:spatial_resolution` and the product-specific objects are not migrated, as they have no 1:1 replacement._
+
 - Single Item
 - Table 1.3.0
 - Timestamps 1.1.0

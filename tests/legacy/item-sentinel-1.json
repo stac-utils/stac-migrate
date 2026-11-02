@@ -1,0 +1,54 @@
+{
+  "stac_version": "1.1.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/sentinel-1/v0.1.0/schema.json"
+  ],
+  "id": "s1-example",
+  "type": "Feature",
+  "bbox": [
+    -180,
+    -90,
+    180,
+    90
+  ],
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -180,
+          -90
+        ],
+        [
+          180,
+          -90
+        ],
+        [
+          180,
+          90
+        ],
+        [
+          -180,
+          90
+        ],
+        [
+          -180,
+          -90
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "datetime": "2020-01-01T00:00:00Z",
+    "s1:datatake_id": "421828",
+    "s1:processing_datetime": "2020-01-01T01:00:00Z",
+    "s1:processing_level": "1",
+    "s1:shape": [
+      26457,
+      16665
+    ],
+    "s1:product_timeliness": "NRT-3h"
+  },
+  "assets": {},
+  "links": []
+}
