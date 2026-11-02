@@ -24,7 +24,7 @@ const SCHEMAS = {
   sar: 'https://stac-extensions.github.io/sar/v1.3.2/schema.json',
   sat: 'https://stac-extensions.github.io/sat/v1.2.0/schema.json',
   scientific: 'https://stac-extensions.github.io/scientific/v1.0.0/schema.json',
-  table: 'https://stac-extensions.github.io/table/v1.2.0/schema.json',
+  table: 'https://stac-extensions.github.io/table/v1.3.0/schema.json',
   timestamps: 'https://stac-extensions.github.io/timestamps/v1.1.0/schema.json',
   version: 'https://stac-extensions.github.io/version/v1.2.0/schema.json',
   view: 'https://stac-extensions.github.io/view/v1.1.0/schema.json',

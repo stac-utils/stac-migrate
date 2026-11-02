@@ -89,7 +89,7 @@ The commands follow the different methods above and has the same "restrictions" 
 - Satellite 1.2.0
 - Scientific Citation 1.0.0
 - Single Item
-- Table 1.2.0
+- Table 1.3.0
 - Timestamps 1.1.0
 - Versioning Indicators 1.2.0
 - View Geometry 1.1.0
